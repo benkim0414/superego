@@ -1,0 +1,3 @@
+FROM golang:onbuild
+ENV DATASTORE_PROJECT_ID superego-173310
+EXPOSE 8080
