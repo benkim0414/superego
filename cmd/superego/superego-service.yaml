@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: superego
+  labels:
+    name: superego
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    name: superego
+  type: LoadBalancer
