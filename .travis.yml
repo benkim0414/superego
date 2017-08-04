@@ -4,3 +4,6 @@ go:
   - master
 
 go_import_path: github.com/benkim0414/superego
+
+env:
+  - DATASTORE_PROJECT_ID=superego-173310
