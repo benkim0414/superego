@@ -1,9 +1,9 @@
 language: go
-
 go:
-  - master
-
+- master
 go_import_path: github.com/benkim0414/superego
-
 env:
-  - DATASTORE_PROJECT_ID=superego-173310
+- DATASTORE_PROJECT_ID=superego-173310
+before_install:
+- openssl aes-256-cbc -K $encrypted_ab7dad584abe_key -iv $encrypted_ab7dad584abe_iv
+  -in superego-9e05bac731d8.json.enc -out superego-9e05bac731d8.json -d
