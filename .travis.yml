@@ -10,18 +10,18 @@ cache:
 env:
 - GCR_HOSTNAME=us.gcr.io PROJECT_ID=superego-173310 IMAGE=superego
 before_install:
-- openssl aes-256-cbc -K $encrypted_ab7dad584abe_key -iv $encrypted_ab7dad584abe_iv
-  -in superego-9e05bac731d8.json.enc -out superego-9e05bac731d8.json -d
-- if [ ! -d ${HOME}/google-cloud-sdk ]; then
-    curl https://sdk.cloud.google.com | bash;
+- openssl aes-256-cbc -K $encrypted_3858cf8f6552_key -iv $encrypted_3858cf8f6552_iv
+  -in superego-b60ee40757c8.json.enc -out superego-b60ee40757c8.json -d
+- if [ ! -d ${HOME}/google-cloud-sdk ]; then curl https://sdk.cloud.google.com | bash;
   fi
-- gcloud auth activate-service-account --key-file superego-9e05bac731d8.json
+- gcloud auth activate-service-account --key-file superego-b60ee40757c8.json
 install:
 - go get -t ./...
 - gcloud config set project superego-173310
 script:
 - go test -v ./...
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "dev"; fi`
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "dev";
+  fi`
 - docker build -t ${GCR_HOSTNAME}/${PROJECT_ID}/${IMAGE}:${TAG} ./cmd/superego
 after_success:
 - gcloud docker -- push ${GCR_HOSTNAME}/${PROJECT_ID}/${IMAGE}
