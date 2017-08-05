@@ -4,13 +4,24 @@ services:
 - docker
 go:
 - master
+cache:
+  directories:
+  - "$HOME/google-cloud-sdk/"
 env:
-- DATASTORE_PROJECT_ID=superego-173310
+- GCR_HOSTNAME=us.gcr.io PROJECT_ID=superego-173310 IMAGE=superego
 before_install:
 - openssl aes-256-cbc -K $encrypted_ab7dad584abe_key -iv $encrypted_ab7dad584abe_iv
   -in superego-9e05bac731d8.json.enc -out superego-9e05bac731d8.json -d
+- if [ ! -d ${HOME}/google-cloud-sdk ]; then
+    curl https://sdk.cloud.google.com | bash;
+  fi
+- gcloud auth activate-service-account --key-file superego-9e05bac731d8.json
+install:
+- go get -t ./...
+- gcloud config set project superego-173310
 script:
-- docker build -t $DOCKER_USERNAME/superego:dev ./cmd/superego
+- go test -v ./...
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "dev"; fi`
+- docker build -t ${GCR_HOSTNAME}/${PROJECT_ID}/${IMAGE}:${TAG} ./cmd/superego
 after_success:
-- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-- docker push $DOCKER_USERNAME/superego
+- gcloud docker -- push ${GCR_HOSTNAME}/${PROJECT_ID}/${IMAGE}
