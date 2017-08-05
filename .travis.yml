@@ -1,4 +1,7 @@
+sudo: required
 language: go
+services:
+- docker
 go:
 - master
 env:
@@ -6,3 +9,8 @@ env:
 before_install:
 - openssl aes-256-cbc -K $encrypted_ab7dad584abe_key -iv $encrypted_ab7dad584abe_iv
   -in superego-9e05bac731d8.json.enc -out superego-9e05bac731d8.json -d
+script:
+- docker build -t $DOCKER_USERNAME/superego:dev ./cmd/superego
+after_success:
+- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+- docker push $DOCKER_USERNAME/superego
