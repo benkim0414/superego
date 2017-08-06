@@ -17,7 +17,7 @@ before_install:
 - gcloud auth activate-service-account --key-file superego-b60ee40757c8.json
 install:
 - go get -t ./...
-- gcloud config set project superego-173310
+- gcloud config set project $PROJECT_ID
 script:
 - go test -v ./...
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "dev";
