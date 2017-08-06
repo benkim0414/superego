@@ -25,3 +25,7 @@ script:
 - docker build -t ${GCR_HOSTNAME}/${PROJECT_ID}/${IMAGE}:${TAG} ./cmd/superego
 after_success:
 - gcloud docker -- push ${GCR_HOSTNAME}/${PROJECT_ID}/${IMAGE}
+notifications:
+  email:
+    on_success: never
+    on_failure: always
