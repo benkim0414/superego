@@ -21,7 +21,7 @@ func main() {
 		httpAddr            = flag.String("http.addr", ":8080", "HTTP listen address")
 		credentialsFilename = flag.String(
 			"credentials.filename",
-			"superego-25e0162c5c59.json",
+			"superego-b60ee40757c8.json",
 			"Google service account credentials file",
 		)
 	)
