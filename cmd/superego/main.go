@@ -33,7 +33,7 @@ func main() {
 	logger = log.With(logger, "caller", log.DefaultCaller)
 
 	ctx := context.Background()
-	projectID := os.Getenv("DATASTORE_PROJECT_ID")
+	projectID := os.Getenv("PROJECT_ID")
 	client, err := datastore.NewClient(
 		ctx,
 		projectID,
