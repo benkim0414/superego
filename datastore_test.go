@@ -5,19 +5,16 @@ import (
 	"testing"
 
 	"cloud.google.com/go/datastore"
-)
-
-const (
-	projectID           = "superego-173310"
-	credentialsFilename = "superego-b60ee40757c8.json"
+	test "github.com/benkim0414/superego/internal/testing"
 )
 
 func TestDatastoreService(t *testing.T) {
+	tc := test.SystemTestContext(t)
 	ctx := context.Background()
 
 	client, err := datastore.NewClient(
 		ctx,
-		projectID,
+		tc.ProjectID,
 	)
 	if err != nil {
 		t.Fatal(err)
