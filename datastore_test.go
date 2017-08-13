@@ -2,14 +2,46 @@ package superego
 
 import (
 	"context"
+	"errors"
+	"os"
 	"testing"
 
 	"cloud.google.com/go/datastore"
-	test "github.com/benkim0414/superego/internal/testing"
 )
 
+var (
+	noProjectID = errors.New("PROJECT_ID is not set")
+)
+
+type Context struct {
+	ProjectID string
+}
+
+func newContext() (Context, error) {
+	tc := Context{}
+
+	tc.ProjectID = os.Getenv("PROJECT_ID")
+	if tc.ProjectID == "" {
+		return tc, noProjectID
+	}
+
+	return tc, nil
+}
+
+// SystemTestContext returns the test context.
+// The test is skipped if the PROJECT_ID environment variable is not set.
+func SystemTestContext(t *testing.T) Context {
+	tc, err := newContext()
+	if err == noProjectID {
+		t.Skip(err)
+	} else if err != nil {
+		t.Fatal(err)
+	}
+	return tc
+}
+
 func TestDatastoreService(t *testing.T) {
-	tc := test.SystemTestContext(t)
+	tc := SystemTestContext(t)
 	ctx := context.Background()
 
 	client, err := datastore.NewClient(
