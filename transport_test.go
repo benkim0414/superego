@@ -37,7 +37,7 @@ func TestMakeHTTPHandler(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !reflect.DeepEqual(body.Profile, p) {
-		t.Errorf("got %v, want %v", body.Profile, p)
+		t.Errorf("PostProfileHandler: got %v, want %v", body.Profile, p)
 	}
 }
 
@@ -134,7 +134,7 @@ func TestEncodeResponse(t *testing.T) {
 
 	err := encodeResponse(ctx, w, response)
 	if err != nil {
-		t.Errorf("encodeResponse:error: got %v, want %v", err, nil)
+		t.Errorf("encodeResponse: got %v, want %v", err, nil)
 	}
 
 	response = struct{}{}
@@ -143,10 +143,10 @@ func TestEncodeResponse(t *testing.T) {
 	resp := w.Result()
 	contentType := resp.Header.Get("Content-Type")
 	if contentType != want.contentType {
-		t.Errorf("encodeResponse:Content-Type: got %q, want %q", contentType, want.contentType)
+		t.Errorf("encodeResponse: got %q, want %q", contentType, want.contentType)
 	}
 	if err != nil {
-		t.Errorf("encodeResponse:error: got %v, want %v", err, nil)
+		t.Errorf("encodeResponse: got %v, want %v", err, nil)
 	}
 }
 
@@ -176,11 +176,11 @@ func TestEncodeError(t *testing.T) {
 	resp := w.Result()
 	contentType := resp.Header.Get("Content-Type")
 	if contentType != want.contentType {
-		t.Errorf("encodeError:Content-Type got %q, want %q", contentType, want.contentType)
+		t.Errorf("encodeError: got %q, want %q", contentType, want.contentType)
 	}
 
 	code := resp.StatusCode
 	if code != want.code {
-		t.Errorf("encodeError:StatusCode: got %d, want %v", code, want.code)
+		t.Errorf("encodeError: got %d, want %v", code, want.code)
 	}
 }
