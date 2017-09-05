@@ -21,6 +21,8 @@ before_install:
 - gcloud auth activate-service-account --key-file superego-b60ee40757c8.json
 install:
 - go get -t ./...
+- go get golang.org/x/tools/cmd/cover
+- go get github.com/mattn/goveralls
 - gcloud config set project $PROJECT_ID
 script:
 - go test -v -covermode=count -coverprofile=coverage.out
