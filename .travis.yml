@@ -9,7 +9,8 @@ cache:
   - "$HOME/google-cloud-sdk/"
 env:
   global:
-    secure: w9JjcJVAh9yOPJcX3JQyc0XebL0ednsTw4Z9b2tKdJD70yDKPBGqxcFPZTsPyRgKgHu2XTUnqoO66JZTRsCJ5aQTGh/qDWVeH50m+QKKC/r6AvIVeFIRYpj2xbVDVGQ+ZnDVIo7Z9n0Ua3j6CwE7Fh1lkAYVOr7GWu3pcLMWqFHqeefjc1CbPntiwiYb6FcT+xoMqH5L6HusLcIAi32WB8X/zQlX9clsQDFe3VJbigjwcCU+ad0awLwV7bEN5e0Jq96X19YYvLNm0DUL3A+aRJ94+PdvQEkrJgHSPNXX028wV8nZ6OCteYWbip1b6fPbjsNpnhrj0j7QIGUEZq0KnOUiF1/jgBZ5nPnLOv++WQkRv2rL21yjaCAgmHsykl+yxgQFtUrT7QJ2KVLXl0RrMr9jpq5gCfaZ0wO31UMF5fllMwOTv5bFTfSqWbrAjLIka9dN2rRQEwgZ3413udtkycHShl1bheMpd2DXUOL9gSA36OYKb49QQSkYQ9/SH3EWFkbFw5IS2Y8p0zdXbRvrqrv5lx9tBSRhuGa1NQEhi0GVQz+7+2FGDoP+WnuWDSTrVvL/6P8bP6uniOY06YGr4rjhP1KpjylMGIG4ayeQniyB0Sky6oT76WGr2cTwP659OwCZBtJcJ51SL/Aai3fmAi3yybKKUMtpuehM99i4np8=
+  - secure: w9JjcJVAh9yOPJcX3JQyc0XebL0ednsTw4Z9b2tKdJD70yDKPBGqxcFPZTsPyRgKgHu2XTUnqoO66JZTRsCJ5aQTGh/qDWVeH50m+QKKC/r6AvIVeFIRYpj2xbVDVGQ+ZnDVIo7Z9n0Ua3j6CwE7Fh1lkAYVOr7GWu3pcLMWqFHqeefjc1CbPntiwiYb6FcT+xoMqH5L6HusLcIAi32WB8X/zQlX9clsQDFe3VJbigjwcCU+ad0awLwV7bEN5e0Jq96X19YYvLNm0DUL3A+aRJ94+PdvQEkrJgHSPNXX028wV8nZ6OCteYWbip1b6fPbjsNpnhrj0j7QIGUEZq0KnOUiF1/jgBZ5nPnLOv++WQkRv2rL21yjaCAgmHsykl+yxgQFtUrT7QJ2KVLXl0RrMr9jpq5gCfaZ0wO31UMF5fllMwOTv5bFTfSqWbrAjLIka9dN2rRQEwgZ3413udtkycHShl1bheMpd2DXUOL9gSA36OYKb49QQSkYQ9/SH3EWFkbFw5IS2Y8p0zdXbRvrqrv5lx9tBSRhuGa1NQEhi0GVQz+7+2FGDoP+WnuWDSTrVvL/6P8bP6uniOY06YGr4rjhP1KpjylMGIG4ayeQniyB0Sky6oT76WGr2cTwP659OwCZBtJcJ51SL/Aai3fmAi3yybKKUMtpuehM99i4np8=
+  - secure: kzENCMZmXTejW2SQHSM8zEABDqd/b/w4FkRNtbnz9pAWdGfFICUPjez20VryVQMFQWhoNQYdX+LAAi8gi/r7OjZKGR8Gq9wEshmiHT2CbnYlWqtP2BeIS1B0pXXAC+kuHMD0Ep50j4iBBoWUa8a/kYNXdRy9IvysolW6XfbxXkeHVw0G6vdk6HxT92LXen6IBsvg1+g2JR20VCsBnL9a8ejYTsuhe5CG1WF4r8L7wBg0pLlo9NI/TqjvuqShZqk4PhwZCMJSsXY0fJx4Wpep5ubPg9B39ga6OeU/76kodZKXYCvNuGUQKAdosrDUztVxR2VljnNLBRc0fl399IZoXb5amkLgwXVr4FEMdBDvmcqZTrponEXEr9xvzQg5DPiuWwKhFTwVttABBYW7nh9jqZZ97BKBMsTIODefFmjNoQbjqHu2PPHE3S+GbuRD8SchIg1W2ROGBN9NP6a0sl2H9bhz7J98kQ5fIYSlCMLB49G3nR94gExPJeqPVZ2fTcCNGuvqtOULSx657AxxLJ2UV8R9K7xs9TbU/knvSNsJnEKzYxZUtKLqv1Gp3OQ6L/4ohGflKdmFjXGC08eeTW6C2t+1Ao2c21kZ9dBBfAvWn/nnCa0rf2XW0LdXtuKLDUFpXe9OY8LVq5XB59bTxgjsDxH9H/ulgZcDY6Hd5u8MRck=
   matrix:
   - GCR_HOSTNAME=us.gcr.io PROJECT_ID=superego-173310 IMAGE=superego
 before_install:
@@ -22,7 +23,8 @@ install:
 - go get -t ./...
 - gcloud config set project $PROJECT_ID
 script:
-- go test -v ./...
+- go test -v -covermode=count -coverprofile=coverage.out
+- $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "dev";
   fi`
 - docker build -t ${GCR_HOSTNAME}/${PROJECT_ID}/${IMAGE}:${TAG} ./cmd/superego
