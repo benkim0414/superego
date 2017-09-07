@@ -6,7 +6,7 @@ go:
 - master
 branches:
   only:
-    - master
+  - master
 cache:
   directories:
   - "$HOME/google-cloud-sdk/"
@@ -16,8 +16,9 @@ env:
   matrix:
   - GCR_HOSTNAME=us.gcr.io PROJECT_ID=superego-173310 IMAGE=superego
 before_install:
-- openssl aes-256-cbc -K $encrypted_3858cf8f6552_key -iv $encrypted_3858cf8f6552_iv
-  -in superego-b60ee40757c8.json.enc -out superego-b60ee40757c8.json -d
+- openssl aes-256-cbc -K $encrypted_457358ef82be_key -iv $encrypted_457358ef82be_iv
+  -in superego-b60ee40757c8.json.enc -out ./cmd/superego/superego-b60ee40757c8.json
+  -d
 - if [ ! -d ${HOME}/google-cloud-sdk ]; then curl https://sdk.cloud.google.com | bash;
   fi
 - gcloud auth activate-service-account --key-file superego-b60ee40757c8.json
