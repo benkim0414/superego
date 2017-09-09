@@ -4,30 +4,49 @@ services:
 - docker
 go:
 - master
+branches:
+  only:
+  - master
 cache:
   directories:
   - "$HOME/google-cloud-sdk/"
 env:
   global:
-    secure: w9JjcJVAh9yOPJcX3JQyc0XebL0ednsTw4Z9b2tKdJD70yDKPBGqxcFPZTsPyRgKgHu2XTUnqoO66JZTRsCJ5aQTGh/qDWVeH50m+QKKC/r6AvIVeFIRYpj2xbVDVGQ+ZnDVIo7Z9n0Ua3j6CwE7Fh1lkAYVOr7GWu3pcLMWqFHqeefjc1CbPntiwiYb6FcT+xoMqH5L6HusLcIAi32WB8X/zQlX9clsQDFe3VJbigjwcCU+ad0awLwV7bEN5e0Jq96X19YYvLNm0DUL3A+aRJ94+PdvQEkrJgHSPNXX028wV8nZ6OCteYWbip1b6fPbjsNpnhrj0j7QIGUEZq0KnOUiF1/jgBZ5nPnLOv++WQkRv2rL21yjaCAgmHsykl+yxgQFtUrT7QJ2KVLXl0RrMr9jpq5gCfaZ0wO31UMF5fllMwOTv5bFTfSqWbrAjLIka9dN2rRQEwgZ3413udtkycHShl1bheMpd2DXUOL9gSA36OYKb49QQSkYQ9/SH3EWFkbFw5IS2Y8p0zdXbRvrqrv5lx9tBSRhuGa1NQEhi0GVQz+7+2FGDoP+WnuWDSTrVvL/6P8bP6uniOY06YGr4rjhP1KpjylMGIG4ayeQniyB0Sky6oT76WGr2cTwP659OwCZBtJcJ51SL/Aai3fmAi3yybKKUMtpuehM99i4np8=
-  matrix:
-  - GCR_HOSTNAME=us.gcr.io PROJECT_ID=superego-173310 IMAGE=superego
+  - secure: w9JjcJVAh9yOPJcX3JQyc0XebL0ednsTw4Z9b2tKdJD70yDKPBGqxcFPZTsPyRgKgHu2XTUnqoO66JZTRsCJ5aQTGh/qDWVeH50m+QKKC/r6AvIVeFIRYpj2xbVDVGQ+ZnDVIo7Z9n0Ua3j6CwE7Fh1lkAYVOr7GWu3pcLMWqFHqeefjc1CbPntiwiYb6FcT+xoMqH5L6HusLcIAi32WB8X/zQlX9clsQDFe3VJbigjwcCU+ad0awLwV7bEN5e0Jq96X19YYvLNm0DUL3A+aRJ94+PdvQEkrJgHSPNXX028wV8nZ6OCteYWbip1b6fPbjsNpnhrj0j7QIGUEZq0KnOUiF1/jgBZ5nPnLOv++WQkRv2rL21yjaCAgmHsykl+yxgQFtUrT7QJ2KVLXl0RrMr9jpq5gCfaZ0wO31UMF5fllMwOTv5bFTfSqWbrAjLIka9dN2rRQEwgZ3413udtkycHShl1bheMpd2DXUOL9gSA36OYKb49QQSkYQ9/SH3EWFkbFw5IS2Y8p0zdXbRvrqrv5lx9tBSRhuGa1NQEhi0GVQz+7+2FGDoP+WnuWDSTrVvL/6P8bP6uniOY06YGr4rjhP1KpjylMGIG4ayeQniyB0Sky6oT76WGr2cTwP659OwCZBtJcJ51SL/Aai3fmAi3yybKKUMtpuehM99i4np8=
+  - GCR_HOSTNAME=us.gcr.io
+  - GCP_PROJECT_ID=superego-173310
+  - GCP_PROJECT_NAME=superego
+  - IMAGE_NAME=superego
+  - GCP_COMPUTE_ZONE=us-central1-a
+  - GCP_CLUSTER_NAME=superego-cluster
 before_install:
-- openssl aes-256-cbc -K $encrypted_3858cf8f6552_key -iv $encrypted_3858cf8f6552_iv
-  -in superego-b60ee40757c8.json.enc -out superego-b60ee40757c8.json -d
+- openssl aes-256-cbc -K $encrypted_457358ef82be_key -iv $encrypted_457358ef82be_iv
+  -in superego-b60ee40757c8.json.enc -out ./cmd/superego/superego-b60ee40757c8.json
+  -d
 - if [ ! -d ${HOME}/google-cloud-sdk ]; then curl https://sdk.cloud.google.com | bash;
   fi
 - gcloud auth activate-service-account --key-file superego-b60ee40757c8.json
 install:
 - go get -t ./...
-- gcloud config set project $PROJECT_ID
+- gcloud config set project $GCP_PROJECT_ID
 script:
 - go test -v ./...
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "dev";
   fi`
-- docker build -t ${GCR_HOSTNAME}/${PROJECT_ID}/${IMAGE}:${TAG} ./cmd/superego
+- docker build -t ${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}:${TAG} ./cmd/superego
 after_success:
-- gcloud docker -- push ${GCR_HOSTNAME}/${PROJECT_ID}/${IMAGE}
+- gcloud docker -- push ${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}:${TAG}
+before_deploy:
+- gcloud components udpate
+- gcloud components update kubectl
+- gcloud config set compute/zone $GCP_COMPUTE_ZONE
+- gcloud config set container/cluster $GCP_CLUSTER_NAME
+deploy:
+- provider: script
+  script: k8s/deploy.sh
+  skip_cleanup: true
+  on:
+    branch: master
 notifications:
   email:
     on_success: never
