@@ -28,9 +28,12 @@ before_install:
 - gcloud auth activate-service-account --key-file superego-b60ee40757c8.json
 install:
 - go get -t ./...
+- go get golang.org/x/tools/cmd/cover
+- go get github.com/mattn/goveralls
 - gcloud config set project $GCP_PROJECT_ID
 script:
-- go test -v ./...
+- go test -v -covermode=count -coverprofile=coverage.out
+- $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "dev";
   fi`
 - docker build -t ${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}:${TAG} ./cmd/superego
