@@ -13,6 +13,38 @@ import (
 	"github.com/go-kit/kit/log"
 )
 
+var handlerTests = []struct {
+	method  string
+	path    string
+	profile *Profile
+}{
+	{
+		method:  http.MethodPost,
+		path:    "/api/v1/profiles/",
+		profile: &Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
+	},
+	{
+		method:  http.MethodGet,
+		path:    "/api/v1/profiles/gunwoo",
+		profile: &Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
+	},
+	{
+		method:  http.MethodPut,
+		path:    "/api/v1/profiles/gunwoo",
+		profile: &Profile{ID: "gunwoo", Email: "ben.kim@greenenergytrading.com.au"},
+	},
+	{
+		method:  http.MethodPatch,
+		path:    "/api/v1/profiles/gunwoo",
+		profile: &Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
+	},
+	{
+		method:  http.MethodDelete,
+		path:    "/api/v1/profiles/gunwoo",
+		profile: nil,
+	},
+}
+
 func TestMakeHTTPHandler(t *testing.T) {
 	logger := log.NewNopLogger()
 	h := MakeHTTPHandler(s, logger)
@@ -20,24 +52,32 @@ func TestMakeHTTPHandler(t *testing.T) {
 	ts := httptest.NewServer(h)
 	defer ts.Close()
 
-	var buf bytes.Buffer
-	p := &Profile{Email: "gunwoo@gunwoo.org"}
-	err := json.NewEncoder(&buf).Encode(p)
-	if err != nil {
-		t.Fatal(err)
-	}
-	req := httptest.NewRequest(http.MethodPost, ts.URL+"/api/v1/profiles/", &buf)
-	w := httptest.NewRecorder()
-	h.ServeHTTP(w, req)
+	for _, tt := range handlerTests {
+		var body bytes.Buffer
+		if tt.method != http.MethodGet || tt.method != http.MethodDelete {
+			err := json.NewEncoder(&body).Encode(tt.profile)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
 
-	resp := w.Result()
-	var body postProfileResponse
-	err = json.NewDecoder(resp.Body).Decode(&body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(body.Profile, p) {
-		t.Errorf("PostProfileHandler: got %v, want %v", body.Profile, p)
+		req := httptest.NewRequest(tt.method, ts.URL+tt.path, &body)
+		w := httptest.NewRecorder()
+		h.ServeHTTP(w, req)
+
+		resp := w.Result()
+		var response struct {
+			Profile *Profile `json:"profile"`
+			Err     error    `json:"err,omitempty"`
+		}
+		err := json.NewDecoder(resp.Body).Decode(&response)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if !reflect.DeepEqual(response.Profile, tt.profile) {
+			t.Errorf("%s %s got %v, want %v", tt.method, tt.path, response.Profile, tt.profile)
+		}
 	}
 }
 
