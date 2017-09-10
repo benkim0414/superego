@@ -41,10 +41,10 @@ script:
 after_success:
 - gcloud docker -- push ${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}:${TAG}
 before_deploy:
-- gcloud components update
-- gcloud components update kubectl
+- gcloud --quiet components update kubectl
 - gcloud config set compute/zone $GCP_COMPUTE_ZONE
 - gcloud config set container/cluster $GCP_CLUSTER_NAME
+- gcloud container clusters get-credentials $GCP_CLUSTER_NAME
 deploy:
 - provider: script
   script: k8s/deploy.sh
