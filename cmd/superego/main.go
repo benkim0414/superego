@@ -10,7 +10,6 @@ import (
 	"syscall"
 
 	"cloud.google.com/go/datastore"
-	"google.golang.org/api/option"
 
 	"github.com/benkim0414/superego"
 	"github.com/go-kit/kit/log"
@@ -18,12 +17,7 @@ import (
 
 func main() {
 	var (
-		httpAddr            = flag.String("http.addr", ":8080", "HTTP listen address")
-		credentialsFilename = flag.String(
-			"credentials.filename",
-			"superego-25e0162c5c59.json",
-			"Google service account credentials file",
-		)
+		httpAddr = flag.String("http.addr", ":8080", "HTTP listen address")
 	)
 	flag.Parse()
 
@@ -33,11 +27,10 @@ func main() {
 	logger = log.With(logger, "caller", log.DefaultCaller)
 
 	ctx := context.Background()
-	projectID := os.Getenv("DATASTORE_PROJECT_ID")
+	projectID := os.Getenv("PROJECT_ID")
 	client, err := datastore.NewClient(
 		ctx,
 		projectID,
-		option.WithServiceAccountFile(*credentialsFilename),
 	)
 	if err != nil {
 		logger.Log("datastore: could not connect: %v", err)
