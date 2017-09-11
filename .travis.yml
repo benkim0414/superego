@@ -26,6 +26,7 @@ before_install:
   -d
 - if [ ! -d ${HOME}/google-cloud-sdk ]; then curl https://sdk.cloud.google.com | bash;
   fi
+- source $HOME/google-cloud-sdk/path.bash.inc
 - gcloud auth activate-service-account --key-file ./cmd/superego/superego-b60ee40757c8.json
 install:
 - go get -t ./...
