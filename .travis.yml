@@ -41,7 +41,7 @@ script:
 after_success:
 - gcloud docker -- push ${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}:${TAG}
 - gcloud --version
-- gcloud --quiet components update kubectl
+- gcloud components update kubectl
 before_deploy:
 - gcloud --quiet components update kubectl
 - gcloud config set compute/zone $GCP_COMPUTE_ZONE
