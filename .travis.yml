@@ -26,7 +26,6 @@ before_install:
   -d
 - if [ ! -d ${HOME}/google-cloud-sdk ]; then curl https://sdk.cloud.google.com | bash;
   fi
-- source $HOME/google-cloud-sdk/path.bash.inc
 - gcloud auth activate-service-account --key-file ./cmd/superego/superego-b60ee40757c8.json
 install:
 - go get -t ./...
@@ -41,6 +40,8 @@ script:
 - docker build -t ${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}:${TAG} ./cmd/superego
 after_success:
 - gcloud docker -- push ${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}:${TAG}
+- gcloud --version
+- gcloud --quiet components update kubectl
 before_deploy:
 - gcloud --quiet components update kubectl
 - gcloud config set compute/zone $GCP_COMPUTE_ZONE
