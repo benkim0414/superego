@@ -34,13 +34,13 @@ install:
 - gcloud config set project $GCP_PROJECT_ID
 script:
 - go test -v -covermode=count -coverprofile=coverage.out
-- $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+- "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken
+  $COVERALLS_TOKEN"
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "dev";
   fi`
 - docker build -t ${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}:${TAG} ./cmd/superego
 after_success:
 - gcloud docker -- push ${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}:${TAG}
 notifications:
-  email:
-    on_success: never
-    on_failure: always
+  slack:
+    secure: GoHaeIErGFR0wbtMDYHt57cd6Bllw9DLrLr3lAU5Rv0zAp8PUcAIecYsbYcy2BisS/jUYdcqmxX2aP6KZTQXEmy7sAJOYcIvZ/6Mnep472o+jA5ymHbn3Hbx6mxor/XZ65pgkggni1DhRHYZg2WjUaKk5Qziutb8WRbZNOZ4R7wXEBLbW00pAQuqwDjS8eKnXBtkDicGi6V02VSuK029N/gGy8Lot+kaje+pmgeU5V2Py01zC+cKivkvDtjyhsL1Eb7g7XKN0q42M0c3YOnwVh/6WxlSu8pOtLkimGhzH+/WzSdSItmxYgWTQpjj0zmcWzt715nHk4ngteGc5h2SRE0eW4GonNMfSOle+aJtYV09GKX/7QRmv0M/wjEA8IMvkKrHOAMQOxTqJqBxwgk9we+N6FURzAIvtyt6vNEKoWGDfr+2lEWnS5Te9eXH1RIYmRhRJADoCtx98iGstK9YF7OsCa9iZ7STiCxasChcoDjAQFFN7EgR26gjcU0NqHQLqElPxCyqeyL5mF/2dJm/k4C1YOJVwtX71GSZlC+PzKzWsY+I1hrhwap1FAr8GJV43U8dhd7UR5oAubN9TohTND4O+7CyJatycqDS5QTZHl74kuhUEwVfcXQCi0heCw4CUWL1zTcQL5cdhVzVy4gTJkMRunamH8LcyFMH/D8bg9U=
