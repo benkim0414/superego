@@ -1,0 +1,3 @@
+# Superego [![Build Status](https://travis-ci.org/benkim0414/superego.svg?branch=test%2Fprofile)](https://travis-ci.org/benkim0414/superego) [![Coverage Status](https://coveralls.io/repos/github/benkim0414/superego/badge.svg?branch=master)](https://coveralls.io/github/benkim0414/superego?branch=master)
+
+Superego is an open source system for managing unified profiles across several services. It is also an experimental project to use the technologies mentioned on [Web Developer Roadmap](https://github.com/kamranahmedse/developer-roadmap).
