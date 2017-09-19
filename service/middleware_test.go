@@ -1,4 +1,4 @@
-package superego
+package service
 
 import (
 	"bytes"
@@ -12,11 +12,11 @@ import (
 func TestLoggingMiddleware(t *testing.T) {
 	logger := log.NewNopLogger()
 	want := &loggingMiddleware{
-		next:   s,
+		next:   FakeService,
 		logger: logger,
 	}
 
-	got := LoggingMiddleware(logger)(s)
+	got := LoggingMiddleware(logger)(FakeService)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("LoggingMiddleware: got %v, want %v", got, want)
 	}
@@ -26,7 +26,7 @@ func TestPostProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(s)
+	mw := LoggingMiddleware(logger)(FakeService)
 
 	ctx := context.Background()
 	p := &Profile{Email: "gunwoo@gunwoo.org"}
@@ -43,7 +43,7 @@ func TestGetProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(s)
+	mw := LoggingMiddleware(logger)(FakeService)
 
 	ctx := context.Background()
 	p := &Profile{ID: "", Email: "gunwoo@gunwoo.org"}
@@ -60,7 +60,7 @@ func TestPutProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(s)
+	mw := LoggingMiddleware(logger)(FakeService)
 
 	ctx := context.Background()
 	p := &Profile{ID: "", Email: "ben.kim@greenenergytrading.com.au"}
@@ -77,7 +77,7 @@ func TestPatchProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(s)
+	mw := LoggingMiddleware(logger)(FakeService)
 
 	ctx := context.Background()
 	p := &Profile{ID: "", Email: "gunwoo@gunwoo.org"}
@@ -94,7 +94,7 @@ func TestDeleteProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(s)
+	mw := LoggingMiddleware(logger)(FakeService)
 
 	ctx := context.Background()
 	id := ""

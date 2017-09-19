@@ -58,3 +58,7 @@ tags
 
 # Google credentials file
 superego-*.json
+
+# gover
+.coverprofile
+gover.coverprofile

@@ -1,4 +1,4 @@
-package superego
+package transport
 
 import (
 	"bytes"
@@ -10,33 +10,35 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/benkim0414/superego/endpoint"
+	"github.com/benkim0414/superego/service"
 	"github.com/go-kit/kit/log"
 )
 
 var handlerTests = []struct {
 	method  string
 	path    string
-	profile *Profile
+	profile *service.Profile
 }{
 	{
 		method:  http.MethodPost,
 		path:    "/api/v1/profiles/",
-		profile: &Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
+		profile: &service.Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
 	},
 	{
 		method:  http.MethodGet,
 		path:    "/api/v1/profiles/gunwoo",
-		profile: &Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
+		profile: &service.Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
 	},
 	{
 		method:  http.MethodPut,
 		path:    "/api/v1/profiles/gunwoo",
-		profile: &Profile{ID: "gunwoo", Email: "ben.kim@greenenergytrading.com.au"},
+		profile: &service.Profile{ID: "gunwoo", Email: "ben.kim@greenenergytrading.com.au"},
 	},
 	{
 		method:  http.MethodPatch,
 		path:    "/api/v1/profiles/gunwoo",
-		profile: &Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
+		profile: &service.Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
 	},
 	{
 		method:  http.MethodDelete,
@@ -45,11 +47,12 @@ var handlerTests = []struct {
 	},
 }
 
-func TestMakeHTTPHandler(t *testing.T) {
+func TestNewHTTPHandler(t *testing.T) {
 	logger := log.NewNopLogger()
-	h := MakeHTTPHandler(s, logger)
+	endpoints := endpoint.New(service.FakeService, logger)
+	handler := NewHTTPHandler(endpoints, logger)
 
-	ts := httptest.NewServer(h)
+	ts := httptest.NewServer(handler)
 	defer ts.Close()
 
 	for _, tt := range handlerTests {
@@ -63,12 +66,12 @@ func TestMakeHTTPHandler(t *testing.T) {
 
 		req := httptest.NewRequest(tt.method, ts.URL+tt.path, &body)
 		w := httptest.NewRecorder()
-		h.ServeHTTP(w, req)
+		handler.ServeHTTP(w, req)
 
 		resp := w.Result()
 		var response struct {
-			Profile *Profile `json:"profile"`
-			Err     error    `json:"err,omitempty"`
+			Profile *service.Profile `json:"profile"`
+			Err     error            `json:"err,omitempty"`
 		}
 		err := json.NewDecoder(resp.Body).Decode(&response)
 		if err != nil {
@@ -91,7 +94,7 @@ func TestDecodePostProfileRequest(t *testing.T) {
 		t.Errorf("decodePostProfileRequest: got %v, want %v", request, nil)
 	}
 
-	p := &Profile{Email: "gunwoo@gunwoo.org"}
+	p := &service.Profile{Email: "gunwoo@gunwoo.org"}
 	err = json.NewEncoder(&buf).Encode(p)
 	if err != nil {
 		t.Fatal(err)
@@ -99,7 +102,7 @@ func TestDecodePostProfileRequest(t *testing.T) {
 	r = httptest.NewRequest(http.MethodPost, "/api/v1/profiles/", &buf)
 
 	request, err = decodePostProfileRequest(ctx, r)
-	got := request.(postProfileRequest)
+	got := request.(endpoint.PostProfileRequest)
 	if !reflect.DeepEqual(got.Profile, p) {
 		t.Errorf("decodePostProfileRequest: got %v, want %v", got.Profile, p)
 	}

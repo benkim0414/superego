@@ -24,17 +24,20 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_457358ef82be_key -iv $encrypted_457358ef82be_iv
   -in superego-b60ee40757c8.json.enc -out ./cmd/superego/superego-b60ee40757c8.json
   -d
+- cp ./cmd/superego/superego-b60ee40757c8.json ./service/
 - if [ ! -d ${HOME}/google-cloud-sdk ]; then curl https://sdk.cloud.google.com | bash;
   fi
 - gcloud auth activate-service-account --key-file ./cmd/superego/superego-b60ee40757c8.json
 install:
 - go get -t ./...
 - go get golang.org/x/tools/cmd/cover
+- go get github.com/modocache/gover
 - go get github.com/mattn/goveralls
 - gcloud config set project $GCP_PROJECT_ID
 script:
-- go test -v -covermode=count -coverprofile=coverage.out
-- "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken
+- go list -f '{{if len .TestGoFiles}}"go test -coverprofile={{.Dir}}/.coverprofile {{.ImportPath}}"{{end}}' ./... | xargs -L 1 sh -c
+- gover
+- "$HOME/gopath/bin/goveralls -coverprofile=gover.coverprofile -service=travis-ci -repotoken
   $COVERALLS_TOKEN"
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "dev";
   fi`
