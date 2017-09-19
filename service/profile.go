@@ -1,4 +1,4 @@
-package superego
+package service
 
 // Profile represents a person's profile.
 type Profile struct {

@@ -1,4 +1,4 @@
-package superego
+package service
 
 import (
 	"context"
@@ -16,7 +16,7 @@ type datastoreService struct {
 	client *datastore.Client
 }
 
-func NewDatastoreService(client *datastore.Client) Service {
+func newDatastoreService(client *datastore.Client) Service {
 	return &datastoreService{client: client}
 }
 
