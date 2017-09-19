@@ -1,4 +1,4 @@
-package superego
+package transport
 
 import (
 	"context"
@@ -6,6 +6,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/benkim0414/superego/endpoint"
+	"github.com/benkim0414/superego/service"
 	"github.com/go-kit/kit/log"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
@@ -17,10 +19,9 @@ var (
 	ErrBadRouting = errors.New("inconsistent mapping between route and handler (programmer error)")
 )
 
-// MakeHTTPHandler mounts all of the service endpoints into an http.Handler.
-func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
+// NewHTTPHandler mounts all of the service endpoints into an http.Handler.
+func NewHTTPHandler(endpoints endpoint.Endpoints, logger log.Logger) http.Handler {
 	r := mux.NewRouter().PathPrefix("/api/v1/").Subrouter()
-	e := MakeServerEndpoints(s)
 
 	options := []httptransport.ServerOption{
 		httptransport.ServerErrorLogger(logger),
@@ -34,31 +35,31 @@ func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
 	// DELETE	/api/v1/profiles/:id	removes the given profile
 
 	r.Methods("POST").Path("/profiles/").Handler(httptransport.NewServer(
-		e.PostProfileEndpoint,
+		endpoints.PostProfileEndpoint,
 		decodePostProfileRequest,
 		encodeResponse,
 		options...,
 	))
 	r.Methods("GET").Path("/profiles/{id}").Handler(httptransport.NewServer(
-		e.GetProfileEndpoint,
+		endpoints.GetProfileEndpoint,
 		decodeGetProfileRequest,
 		encodeResponse,
 		options...,
 	))
 	r.Methods("PUT").Path("/profiles/{id}").Handler(httptransport.NewServer(
-		e.PutProfileEndpoint,
+		endpoints.PutProfileEndpoint,
 		decodePutProfileRequest,
 		encodeResponse,
 		options...,
 	))
 	r.Methods("PATCH").Path("/profiles/{id}").Handler(httptransport.NewServer(
-		e.PatchProfileEndpoint,
+		endpoints.PatchProfileEndpoint,
 		decodePatchProfileRequest,
 		encodeResponse,
 		options...,
 	))
 	r.Methods("DELETE").Path("/profiles/{id}").Handler(httptransport.NewServer(
-		e.DeleteProfileEndpoint,
+		endpoints.DeleteProfileEndpoint,
 		decodeDeleteProfileRequest,
 		encodeResponse,
 		options...,
@@ -67,7 +68,7 @@ func MakeHTTPHandler(s Service, logger log.Logger) http.Handler {
 }
 
 func decodePostProfileRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
-	var req postProfileRequest
+	var req endpoint.PostProfileRequest
 	if err := json.NewDecoder(r.Body).Decode(&req.Profile); err != nil {
 		return nil, err
 	}
@@ -80,7 +81,7 @@ func decodeGetProfileRequest(_ context.Context, r *http.Request) (request interf
 	if !ok {
 		return nil, ErrBadRouting
 	}
-	return getProfileRequest{ID: id}, nil
+	return endpoint.GetProfileRequest{ID: id}, nil
 }
 
 func decodePutProfileRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
@@ -89,11 +90,11 @@ func decodePutProfileRequest(_ context.Context, r *http.Request) (request interf
 	if !ok {
 		return nil, ErrBadRouting
 	}
-	profile := &Profile{}
+	profile := &service.Profile{}
 	if err := json.NewDecoder(r.Body).Decode(&profile); err != nil {
 		return nil, err
 	}
-	return putProfileRequest{ID: id, Profile: profile}, nil
+	return endpoint.PutProfileRequest{ID: id, Profile: profile}, nil
 }
 
 func decodePatchProfileRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
@@ -102,11 +103,11 @@ func decodePatchProfileRequest(_ context.Context, r *http.Request) (request inte
 	if !ok {
 		return nil, ErrBadRouting
 	}
-	profile := &Profile{}
+	profile := &service.Profile{}
 	if err := json.NewDecoder(r.Body).Decode(&profile); err != nil {
 		return nil, err
 	}
-	return patchProfileRequest{ID: id, Profile: profile}, nil
+	return endpoint.PatchProfileRequest{ID: id, Profile: profile}, nil
 }
 
 func decodeDeleteProfileRequest(_ context.Context, r *http.Request) (request interface{}, err error) {
@@ -115,7 +116,7 @@ func decodeDeleteProfileRequest(_ context.Context, r *http.Request) (request int
 	if !ok {
 		return nil, ErrBadRouting
 	}
-	return deleteProfileRequest{ID: id}, nil
+	return endpoint.DeleteProfileRequest{ID: id}, nil
 }
 
 // errorer is implemented by all concrete response types that may contain

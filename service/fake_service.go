@@ -1,4 +1,4 @@
-package superego
+package service
 
 import (
 	"context"
@@ -10,13 +10,15 @@ var (
 	ErrNoSuchEntity = errors.New("no such entity")
 )
 
-// FakeService is a simple fake service for testing.
-type FakeService struct {
+// fakeService is a simple fake service for testing.
+type fakeService struct {
 	mu       sync.RWMutex
 	profiles map[string]*Profile
 }
 
-func (f *FakeService) PostProfile(_ context.Context, p *Profile) (*Profile, error) {
+var FakeService = &fakeService{profiles: map[string]*Profile{}}
+
+func (f *fakeService) PostProfile(_ context.Context, p *Profile) (*Profile, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
@@ -24,7 +26,7 @@ func (f *FakeService) PostProfile(_ context.Context, p *Profile) (*Profile, erro
 	return p, nil
 }
 
-func (f *FakeService) GetProfile(_ context.Context, id string) (*Profile, error) {
+func (f *fakeService) GetProfile(_ context.Context, id string) (*Profile, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 
@@ -35,7 +37,7 @@ func (f *FakeService) GetProfile(_ context.Context, id string) (*Profile, error)
 	return p, nil
 }
 
-func (f *FakeService) PutProfile(_ context.Context, id string, p *Profile) (*Profile, error) {
+func (f *fakeService) PutProfile(_ context.Context, id string, p *Profile) (*Profile, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
@@ -43,7 +45,7 @@ func (f *FakeService) PutProfile(_ context.Context, id string, p *Profile) (*Pro
 	return p, nil
 }
 
-func (f *FakeService) PatchProfile(_ context.Context, id string, p *Profile) (*Profile, error) {
+func (f *fakeService) PatchProfile(_ context.Context, id string, p *Profile) (*Profile, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
@@ -69,7 +71,7 @@ func (f *FakeService) PatchProfile(_ context.Context, id string, p *Profile) (*P
 	return p, nil
 }
 
-func (f *FakeService) DeleteProfile(_ context.Context, id string) error {
+func (f *fakeService) DeleteProfile(_ context.Context, id string) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 
