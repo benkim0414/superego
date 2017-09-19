@@ -22,7 +22,7 @@ func TestLoggingMiddleware(t *testing.T) {
 	}
 }
 
-func TestPostProfile(t *testing.T) {
+func TestMiddlewarePostProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
@@ -39,7 +39,7 @@ func TestPostProfile(t *testing.T) {
 	}
 }
 
-func TestGetProfile(t *testing.T) {
+func TestMiddlewareGetProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
@@ -56,7 +56,7 @@ func TestGetProfile(t *testing.T) {
 	}
 }
 
-func TestPutProfile(t *testing.T) {
+func TestMiddlewarePutProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
@@ -73,7 +73,7 @@ func TestPutProfile(t *testing.T) {
 	}
 }
 
-func TestPatchProfile(t *testing.T) {
+func TestMiddlewarePatchProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
@@ -90,7 +90,7 @@ func TestPatchProfile(t *testing.T) {
 	}
 }
 
-func TestDeleteProfile(t *testing.T) {
+func TestMiddlewareDeleteProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
