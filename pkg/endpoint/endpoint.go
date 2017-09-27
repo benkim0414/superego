@@ -3,7 +3,7 @@ package endpoint
 import (
 	"context"
 
-	"github.com/benkim0414/superego/service"
+	"github.com/benkim0414/superego/pkg/service"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 )
