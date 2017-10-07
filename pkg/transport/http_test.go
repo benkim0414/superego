@@ -10,8 +10,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/benkim0414/superego/endpoint"
-	"github.com/benkim0414/superego/service"
+	"github.com/benkim0414/superego/pkg/endpoint"
+	"github.com/benkim0414/superego/pkg/service"
 	"github.com/go-kit/kit/log"
 )
 

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/benkim0414/superego/service"
+	"github.com/benkim0414/superego/pkg/service"
 )
 
 func TestMakePostProfileEndpoint(t *testing.T) {
