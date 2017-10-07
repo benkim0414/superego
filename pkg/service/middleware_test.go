@@ -1,4 +1,4 @@
-package superego
+package service
 
 import (
 	"bytes"
@@ -12,21 +12,21 @@ import (
 func TestLoggingMiddleware(t *testing.T) {
 	logger := log.NewNopLogger()
 	want := &loggingMiddleware{
-		next:   s,
+		next:   FakeService,
 		logger: logger,
 	}
 
-	got := LoggingMiddleware(logger)(s)
+	got := LoggingMiddleware(logger)(FakeService)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("LoggingMiddleware: got %v, want %v", got, want)
 	}
 }
 
-func TestPostProfile(t *testing.T) {
+func TestMiddlewarePostProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(s)
+	mw := LoggingMiddleware(logger)(FakeService)
 
 	ctx := context.Background()
 	p := &Profile{Email: "gunwoo@gunwoo.org"}
@@ -39,11 +39,11 @@ func TestPostProfile(t *testing.T) {
 	}
 }
 
-func TestGetProfile(t *testing.T) {
+func TestMiddlewareGetProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(s)
+	mw := LoggingMiddleware(logger)(FakeService)
 
 	ctx := context.Background()
 	p := &Profile{ID: "", Email: "gunwoo@gunwoo.org"}
@@ -56,11 +56,11 @@ func TestGetProfile(t *testing.T) {
 	}
 }
 
-func TestPutProfile(t *testing.T) {
+func TestMiddlewarePutProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(s)
+	mw := LoggingMiddleware(logger)(FakeService)
 
 	ctx := context.Background()
 	p := &Profile{ID: "", Email: "ben.kim@greenenergytrading.com.au"}
@@ -73,11 +73,11 @@ func TestPutProfile(t *testing.T) {
 	}
 }
 
-func TestPatchProfile(t *testing.T) {
+func TestMiddlewarePatchProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(s)
+	mw := LoggingMiddleware(logger)(FakeService)
 
 	ctx := context.Background()
 	p := &Profile{ID: "", Email: "gunwoo@gunwoo.org"}
@@ -90,11 +90,11 @@ func TestPatchProfile(t *testing.T) {
 	}
 }
 
-func TestDeleteProfile(t *testing.T) {
+func TestMiddlewareDeleteProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(s)
+	mw := LoggingMiddleware(logger)(FakeService)
 
 	ctx := context.Background()
 	id := ""

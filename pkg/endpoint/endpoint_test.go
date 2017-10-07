@@ -1,17 +1,19 @@
-package superego
+package endpoint
 
 import (
 	"context"
 	"reflect"
 	"testing"
+
+	"github.com/benkim0414/superego/service"
 )
 
 func TestMakePostProfileEndpoint(t *testing.T) {
-	e := MakePostProfileEndpoint(s)
+	e := MakePostProfileEndpoint(service.FakeService)
 
 	ctx := context.Background()
-	p := &Profile{Email: "gunwoo@gunwoo.org"}
-	req := postProfileRequest{
+	p := &service.Profile{Email: "gunwoo@gunwoo.org"}
+	req := PostProfileRequest{
 		Profile: p,
 	}
 	resp, err := e(ctx, req)
@@ -19,7 +21,7 @@ func TestMakePostProfileEndpoint(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got := resp.(postProfileResponse)
+	got := resp.(PostProfileResponse)
 	if !reflect.DeepEqual(got.Profile, req.Profile) {
 		t.Errorf("PostProfileEndpoint: got %v, want %v", got.Profile, req.Profile)
 	}
@@ -31,11 +33,11 @@ func TestMakePostProfileEndpoint(t *testing.T) {
 }
 
 func TestMakeGetProfileEndpoint(t *testing.T) {
-	e := MakeGetProfileEndpoint(s)
+	e := MakeGetProfileEndpoint(service.FakeService)
 
 	ctx := context.Background()
-	p := &Profile{Email: "gunwoo@gunwoo.org"}
-	req := getProfileRequest{
+	p := &service.Profile{Email: "gunwoo@gunwoo.org"}
+	req := GetProfileRequest{
 		ID: p.ID,
 	}
 	resp, err := e(ctx, req)
@@ -43,7 +45,7 @@ func TestMakeGetProfileEndpoint(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got := resp.(getProfileResponse)
+	got := resp.(GetProfileResponse)
 	if !reflect.DeepEqual(got.Profile, p) {
 		t.Errorf("GetProfileEndpoint: got %v, want %v", got.Profile, p)
 	}
@@ -54,11 +56,11 @@ func TestMakeGetProfileEndpoint(t *testing.T) {
 }
 
 func TestMakePutProfileEndpoint(t *testing.T) {
-	e := MakePutProfileEndpoint(s)
+	e := MakePutProfileEndpoint(service.FakeService)
 
 	ctx := context.Background()
-	p := &Profile{Email: "ben.kim@greenenergytrading.com.au"}
-	req := putProfileRequest{
+	p := &service.Profile{Email: "ben.kim@greenenergytrading.com.au"}
+	req := PutProfileRequest{
 		ID:      p.ID,
 		Profile: p,
 	}
@@ -67,7 +69,7 @@ func TestMakePutProfileEndpoint(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got := resp.(putProfileResponse)
+	got := resp.(PutProfileResponse)
 	if !reflect.DeepEqual(got.Profile, p) {
 		t.Errorf("PutProfileEndpoint: got %v, want %v", got.Profile, p)
 	}
@@ -78,11 +80,11 @@ func TestMakePutProfileEndpoint(t *testing.T) {
 }
 
 func TestMakePatchProfileEndpoint(t *testing.T) {
-	e := MakePatchProfileEndpoint(s)
+	e := MakePatchProfileEndpoint(service.FakeService)
 
 	ctx := context.Background()
-	p := &Profile{Email: "gunwoo@gunwoo.org"}
-	req := patchProfileRequest{
+	p := &service.Profile{Email: "gunwoo@gunwoo.org"}
+	req := PatchProfileRequest{
 		ID:      p.ID,
 		Profile: p,
 	}
@@ -91,7 +93,7 @@ func TestMakePatchProfileEndpoint(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got := resp.(patchProfileResponse)
+	got := resp.(PatchProfileResponse)
 	if !reflect.DeepEqual(got.Profile, p) {
 		t.Errorf("PatchProfileEndpoint: got %v, want %v", got.Profile, p)
 	}
@@ -102,10 +104,10 @@ func TestMakePatchProfileEndpoint(t *testing.T) {
 }
 
 func TestDeleteProfileEndpoinit(t *testing.T) {
-	e := MakeDeleteProfileEndpoint(s)
+	e := MakeDeleteProfileEndpoint(service.FakeService)
 
 	ctx := context.Background()
-	req := deleteProfileRequest{
+	req := DeleteProfileRequest{
 		ID: "",
 	}
 	resp, err := e(ctx, req)
@@ -113,7 +115,7 @@ func TestDeleteProfileEndpoinit(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	got := resp.(deleteProfileResponse)
+	got := resp.(DeleteProfileResponse)
 	if got.Err != nil {
 		t.Errorf("DeleteProfileEndpoint: got %v, want %v", got.Err, nil)
 	}

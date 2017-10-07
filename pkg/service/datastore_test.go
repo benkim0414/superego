@@ -1,4 +1,4 @@
-package superego
+package service
 
 import (
 	"context"
@@ -53,7 +53,7 @@ func TestDatastoreService(t *testing.T) {
 	}
 	defer client.Close()
 
-	s := NewDatastoreService(client)
+	s := newDatastoreService(client)
 
 	p := &Profile{
 		Email: "gunwoo@gunwoo.org",

@@ -11,7 +11,9 @@ import (
 
 	"cloud.google.com/go/datastore"
 
-	"github.com/benkim0414/superego"
+	"github.com/benkim0414/superego/pkg/endpoint"
+	"github.com/benkim0414/superego/pkg/service"
+	"github.com/benkim0414/superego/pkg/transport"
 	"github.com/go-kit/kit/log"
 )
 
@@ -37,12 +39,11 @@ func main() {
 	}
 	defer client.Close()
 
-	var s superego.Service
-	s = superego.NewDatastoreService(client)
-	s = superego.LoggingMiddleware(logger)(s)
-
-	var h http.Handler
-	h = superego.MakeHTTPHandler(s, log.With(logger, "component", "HTTP"))
+	var (
+		service     = service.New(client, logger)
+		endpoints   = endpoint.New(service, logger)
+		httpHandler = transport.NewHTTPHandler(endpoints, logger)
+	)
 
 	errs := make(chan error)
 	go func() {
@@ -53,7 +54,7 @@ func main() {
 
 	go func() {
 		logger.Log("transport", "HTTP", "addr", *httpAddr)
-		errs <- http.ListenAndServe(*httpAddr, h)
+		errs <- http.ListenAndServe(*httpAddr, httpHandler)
 	}()
 
 	logger.Log("exit", <-errs)

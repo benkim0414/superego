@@ -1,4 +1,4 @@
-package superego
+package service
 
 import (
 	"context"
@@ -10,18 +10,17 @@ import (
 // Middleware describes a service (as opposed to endpoint) middleware.
 type Middleware func(Service) Service
 
+// LoggingMiddleware takes a logger as a dependency
+// and returns a ServiceMiddleware.
 func LoggingMiddleware(logger log.Logger) Middleware {
 	return func(next Service) Service {
-		return &loggingMiddleware{
-			next:   next,
-			logger: logger,
-		}
+		return &loggingMiddleware{logger, next}
 	}
 }
 
 type loggingMiddleware struct {
-	next   Service
 	logger log.Logger
+	next   Service
 }
 
 func (mw loggingMiddleware) PostProfile(ctx context.Context, p *Profile) (profile *Profile, err error) {
