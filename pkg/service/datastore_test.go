@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	noProjectID = errors.New("PROJECT_ID is not set")
+	noProjectID = errors.New("GCP_PROJECT_ID is not set")
 )
 
 type Context struct {
@@ -20,7 +20,7 @@ type Context struct {
 func newContext() (Context, error) {
 	tc := Context{}
 
-	tc.ProjectID = os.Getenv("PROJECT_ID")
+	tc.ProjectID = os.Getenv("GCP_PROJECT_ID")
 	if tc.ProjectID == "" {
 		return tc, noProjectID
 	}
@@ -29,7 +29,7 @@ func newContext() (Context, error) {
 }
 
 // SystemTestContext returns the test context.
-// The test is skipped if the PROJECT_ID environment variable is not set.
+// The test is skipped if the GCP_PROJECT_ID environment variable is not set.
 func SystemTestContext(t *testing.T) Context {
 	tc, err := newContext()
 	if err == noProjectID {
