@@ -57,7 +57,7 @@ func TestNewHTTPHandler(t *testing.T) {
 
 	for _, tt := range handlerTests {
 		var body bytes.Buffer
-		if tt.method != http.MethodGet || tt.method != http.MethodDelete {
+		if tt.method == http.MethodPost || tt.method == http.MethodPut || tt.method == http.MethodPatch {
 			err := json.NewEncoder(&body).Encode(tt.profile)
 			if err != nil {
 				t.Fatal(err)
