@@ -1,4 +1,4 @@
-package service
+package profile
 
 import (
 	"context"
@@ -6,10 +6,9 @@ import (
 	"testing"
 
 	"cloud.google.com/go/datastore"
-	"github.com/go-kit/kit/log"
 )
 
-func TestNew(t *testing.T) {
+func TestNewService(t *testing.T) {
 	tc := SystemTestContext(t)
 	ctx := context.Background()
 
@@ -19,11 +18,9 @@ func TestNew(t *testing.T) {
 	}
 	defer client.Close()
 
-	logger := log.NewNopLogger()
 	s := newDatastoreService(client)
-	s = LoggingMiddleware(logger)(s)
 
-	got := New(client, logger)
+	got := NewService(client)
 	if !reflect.DeepEqual(got, s) {
 		t.Errorf("New: got %v, want %v", got, s)
 	}

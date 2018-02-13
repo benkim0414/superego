@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/benkim0414/superego/pkg/service"
+	"github.com/benkim0414/superego/pkg/profile"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/relay"
 	"golang.org/x/net/context"
@@ -51,7 +51,7 @@ func NewSchema(resolver Resolver) (graphql.Schema, error) {
 			"formatted": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.String),
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					if name, ok := p.Source.(service.Name); ok {
+					if name, ok := p.Source.(profile.Name); ok {
 						formatted := fmt.Sprintf("%s %s", name.GivenName, name.FamilyName)
 						return formatted, nil
 					}
@@ -160,7 +160,7 @@ func NewSchema(resolver Resolver) (graphql.Schema, error) {
 		},
 		MutateAndGetPayload: func(inputMap map[string]interface{}, info graphql.ResolveInfo, ctx context.Context) (map[string]interface{}, error) {
 			email := inputMap["email"].(string)
-			p := &service.Profile{
+			p := &profile.Profile{
 				Email: email,
 			}
 
@@ -168,7 +168,7 @@ func NewSchema(resolver Resolver) (graphql.Schema, error) {
 				p.DisplayName = displayName
 			}
 
-			name := service.Name{}
+			name := profile.Name{}
 			if familyName, ok := inputMap["familyName"].(string); ok {
 				name.FamilyName = familyName
 			}
