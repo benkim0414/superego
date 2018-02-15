@@ -6,10 +6,11 @@ import (
 	"testing"
 
 	"cloud.google.com/go/datastore"
+	"github.com/benkim0414/superego/internal/testutil"
 )
 
 func TestNewService(t *testing.T) {
-	tc := SystemTestContext(t)
+	tc := testutil.SystemTestContext(t)
 	ctx := context.Background()
 
 	client, err := datastore.NewClient(ctx, tc.ProjectID)
