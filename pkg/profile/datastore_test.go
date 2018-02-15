@@ -1,47 +1,16 @@
-package service
+package profile
 
 import (
 	"context"
-	"errors"
-	"os"
 	"testing"
+
+	"github.com/benkim0414/superego/internal/testutil"
 
 	"cloud.google.com/go/datastore"
 )
 
-var (
-	noProjectID = errors.New("GCP_PROJECT_ID is not set")
-)
-
-type Context struct {
-	ProjectID string
-}
-
-func newContext() (Context, error) {
-	tc := Context{}
-
-	tc.ProjectID = os.Getenv("GCP_PROJECT_ID")
-	if tc.ProjectID == "" {
-		return tc, noProjectID
-	}
-
-	return tc, nil
-}
-
-// SystemTestContext returns the test context.
-// The test is skipped if the GCP_PROJECT_ID environment variable is not set.
-func SystemTestContext(t *testing.T) Context {
-	tc, err := newContext()
-	if err == noProjectID {
-		t.Skip(err)
-	} else if err != nil {
-		t.Fatal(err)
-	}
-	return tc
-}
-
 func TestDatastoreService(t *testing.T) {
-	tc := SystemTestContext(t)
+	tc := testutil.SystemTestContext(t)
 	ctx := context.Background()
 
 	client, err := datastore.NewClient(

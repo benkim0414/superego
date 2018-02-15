@@ -1,4 +1,4 @@
-package service
+package profile
 
 // Profile represents a person's profile.
 type Profile struct {

@@ -3,6 +3,7 @@ package endpoint
 import (
 	"context"
 
+	"github.com/benkim0414/superego/pkg/profile"
 	"github.com/benkim0414/superego/pkg/service"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
@@ -97,11 +98,11 @@ func MakeDeleteProfileEndpoint(s service.Service) endpoint.Endpoint {
 }
 
 type PostProfileRequest struct {
-	Profile *service.Profile `json:"profile"`
+	Profile *profile.Profile `json:"profile"`
 }
 
 type PostProfileResponse struct {
-	Profile *service.Profile `json:"profile"`
+	Profile *profile.Profile `json:"profile"`
 	Err     error            `json:"err,omitempty"`
 }
 
@@ -112,7 +113,7 @@ type GetProfileRequest struct {
 }
 
 type GetProfileResponse struct {
-	Profile *service.Profile `json:"profile,omitempty"`
+	Profile *profile.Profile `json:"profile,omitempty"`
 	Err     error            `json:"err,omitempty"`
 }
 
@@ -120,11 +121,11 @@ func (r GetProfileResponse) error() error { return r.Err }
 
 type PutProfileRequest struct {
 	ID      string           `json:"id"`
-	Profile *service.Profile `json:"profile"`
+	Profile *profile.Profile `json:"profile"`
 }
 
 type PutProfileResponse struct {
-	Profile *service.Profile `json:"profile,omitempty"`
+	Profile *profile.Profile `json:"profile,omitempty"`
 	Err     error            `json:"err,omitempty"`
 }
 
@@ -132,11 +133,11 @@ func (r PutProfileResponse) error() error { return r.Err }
 
 type PatchProfileRequest struct {
 	ID      string           `json:"id"`
-	Profile *service.Profile `json:"profile"`
+	Profile *profile.Profile `json:"profile"`
 }
 
 type PatchProfileResponse struct {
-	Profile *service.Profile `json:"profile,omitempty"`
+	Profile *profile.Profile `json:"profile,omitempty"`
 	Err     error            `json:"err,omitempty"`
 }
 
