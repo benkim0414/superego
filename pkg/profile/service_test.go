@@ -23,6 +23,6 @@ func TestNewService(t *testing.T) {
 
 	got := NewService(client)
 	if !reflect.DeepEqual(got, s) {
-		t.Errorf("New: got %v, want %v", got, s)
+		t.Errorf("NewService: got %v, want %v", got, s)
 	}
 }
