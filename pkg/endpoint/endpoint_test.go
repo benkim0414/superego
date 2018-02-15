@@ -5,14 +5,14 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/benkim0414/superego/pkg/service"
+	"github.com/benkim0414/superego/pkg/profile"
 )
 
 func TestMakePostProfileEndpoint(t *testing.T) {
-	e := MakePostProfileEndpoint(service.FakeService)
+	e := MakePostProfileEndpoint(profile.FakeService)
 
 	ctx := context.Background()
-	p := &service.Profile{Email: "gunwoo@gunwoo.org"}
+	p := &profile.Profile{Email: "gunwoo@gunwoo.org"}
 	req := PostProfileRequest{
 		Profile: p,
 	}
@@ -33,10 +33,10 @@ func TestMakePostProfileEndpoint(t *testing.T) {
 }
 
 func TestMakeGetProfileEndpoint(t *testing.T) {
-	e := MakeGetProfileEndpoint(service.FakeService)
+	e := MakeGetProfileEndpoint(profile.FakeService)
 
 	ctx := context.Background()
-	p := &service.Profile{Email: "gunwoo@gunwoo.org"}
+	p := &profile.Profile{Email: "gunwoo@gunwoo.org"}
 	req := GetProfileRequest{
 		ID: p.ID,
 	}
@@ -56,10 +56,10 @@ func TestMakeGetProfileEndpoint(t *testing.T) {
 }
 
 func TestMakePutProfileEndpoint(t *testing.T) {
-	e := MakePutProfileEndpoint(service.FakeService)
+	e := MakePutProfileEndpoint(profile.FakeService)
 
 	ctx := context.Background()
-	p := &service.Profile{Email: "ben.kim@greenenergytrading.com.au"}
+	p := &profile.Profile{Email: "ben.kim@greenenergytrading.com.au"}
 	req := PutProfileRequest{
 		ID:      p.ID,
 		Profile: p,
@@ -80,10 +80,10 @@ func TestMakePutProfileEndpoint(t *testing.T) {
 }
 
 func TestMakePatchProfileEndpoint(t *testing.T) {
-	e := MakePatchProfileEndpoint(service.FakeService)
+	e := MakePatchProfileEndpoint(profile.FakeService)
 
 	ctx := context.Background()
-	p := &service.Profile{Email: "gunwoo@gunwoo.org"}
+	p := &profile.Profile{Email: "gunwoo@gunwoo.org"}
 	req := PatchProfileRequest{
 		ID:      p.ID,
 		Profile: p,
@@ -104,7 +104,7 @@ func TestMakePatchProfileEndpoint(t *testing.T) {
 }
 
 func TestDeleteProfileEndpoinit(t *testing.T) {
-	e := MakeDeleteProfileEndpoint(service.FakeService)
+	e := MakeDeleteProfileEndpoint(profile.FakeService)
 
 	ctx := context.Background()
 	req := DeleteProfileRequest{
