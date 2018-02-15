@@ -14,7 +14,7 @@ func TestMiddlewarePostProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(profile.FakeService)
+	mw := NewLoggingMiddleware(logger)(profile.FakeService)
 
 	ctx := context.Background()
 	p := &profile.Profile{Email: "gunwoo@gunwoo.org"}
@@ -31,7 +31,7 @@ func TestMiddlewareGetProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(profile.FakeService)
+	mw := NewLoggingMiddleware(logger)(profile.FakeService)
 
 	ctx := context.Background()
 	p := &profile.Profile{ID: "", Email: "gunwoo@gunwoo.org"}
@@ -48,7 +48,7 @@ func TestMiddlewarePutProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(profile.FakeService)
+	mw := NewLoggingMiddleware(logger)(profile.FakeService)
 
 	ctx := context.Background()
 	p := &profile.Profile{ID: "", Email: "ben.kim@greenenergytrading.com.au"}
@@ -65,7 +65,7 @@ func TestMiddlewarePatchProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(profile.FakeService)
+	mw := NewLoggingMiddleware(logger)(profile.FakeService)
 
 	ctx := context.Background()
 	p := &profile.Profile{ID: "", Email: "gunwoo@gunwoo.org"}
@@ -82,7 +82,7 @@ func TestMiddlewareDeleteProfile(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 
-	mw := LoggingMiddleware(logger)(profile.FakeService)
+	mw := NewLoggingMiddleware(logger)(profile.FakeService)
 
 	ctx := context.Background()
 	id := ""
