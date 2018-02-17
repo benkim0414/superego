@@ -29,7 +29,8 @@ before_install:
 - export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/cmd/superego/superego-b60ee40757c8.json
 - gcloud auth activate-service-account --key-file ./cmd/superego/superego-b60ee40757c8.json
 install:
-- go get -t ./...
+- go get github.com/golang/dep/cmd/dep
+- dep ensure
 - go get golang.org/x/tools/cmd/cover
 - go get github.com/modocache/gover
 - go get github.com/mattn/goveralls
