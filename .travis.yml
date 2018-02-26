@@ -43,7 +43,7 @@ script:
   -repotoken $COVERALLS_TOKEN"
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "dev";
   fi`
-- docker build -t ${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}:${TAG} ./cmd/superego
+- bash ./hack/build.sh "${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}" $TAG
 after_success:
 - gcloud docker -- push ${GCR_HOSTNAME}/${GCP_PROJECT_ID}/${IMAGE_NAME}:${TAG}
 notifications:
