@@ -1,8 +1,11 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: superego
 spec:
+  selector:
+    matchLabels:
+      app: superego
   replicas: 3
   template:
     metadata:
@@ -11,6 +14,7 @@ spec:
     spec:
       containers:
       - name: superego
-        image: us.gcr.io/superego-173310/superego:latest
+        image: benkim/superego:dev
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
