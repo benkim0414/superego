@@ -28,5 +28,5 @@ ENV GCP_PROJECT_ID superego-173310
 ENV GOOGLE_APPLICATION_CREDENTIALS /bin/superego-b60ee40757c8.json
 
 # Expose ports and run the application
-EXPOSE 8080 8081
+EXPOSE 8079 8080 8081
 CMD ["/bin/superego"]
