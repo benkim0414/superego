@@ -99,7 +99,7 @@ func TestLoggingMiddlewareDeleteProfile(t *testing.T) {
 }
 
 func TestInstrumentingMiddlewarePostProfile(t *testing.T) {
-	namespace, subsystem := "test", "post_profile"
+	namespace, subsystem := "middleware_profile_test", "post_profile"
 	mw := newTestInstrumentingMiddleware(namespace, subsystem)
 	svc := mw(profile.FakeService)
 	_, err := svc.PostProfile(context.Background(), &profile.Profile{
@@ -115,7 +115,7 @@ func TestInstrumentingMiddlewarePostProfile(t *testing.T) {
 }
 
 func TestInstrumentingMiddlewareGetProfile(t *testing.T) {
-	namespace, subsystem := "test", "get_profile"
+	namespace, subsystem := "middleware_profile_test", "get_profile"
 	mw := newTestInstrumentingMiddleware(namespace, subsystem)
 	svc := mw(profile.FakeService)
 	_, err := svc.GetProfile(context.Background(), "")
@@ -129,7 +129,7 @@ func TestInstrumentingMiddlewareGetProfile(t *testing.T) {
 }
 
 func TestInstrumentingMiddlewarePutProfile(t *testing.T) {
-	namespace, subsystem := "test", "put_profile"
+	namespace, subsystem := "middleware_profile_test", "put_profile"
 	mw := newTestInstrumentingMiddleware(namespace, subsystem)
 	svc := mw(profile.FakeService)
 	_, err := svc.PutProfile(context.Background(), "", &profile.Profile{
@@ -145,7 +145,7 @@ func TestInstrumentingMiddlewarePutProfile(t *testing.T) {
 }
 
 func TestInstrumentingMiddlewarePatchProfile(t *testing.T) {
-	namespace, subsystem := "test", "patch_profile"
+	namespace, subsystem := "middleware_profile_test", "patch_profile"
 	mw := newTestInstrumentingMiddleware(namespace, subsystem)
 	svc := mw(profile.FakeService)
 	_, err := svc.PatchProfile(context.Background(), "", &profile.Profile{
@@ -161,7 +161,7 @@ func TestInstrumentingMiddlewarePatchProfile(t *testing.T) {
 }
 
 func TestInstrumentingMiddlewareDeleteProfile(t *testing.T) {
-	namespace, subsystem := "test", "delete_profile"
+	namespace, subsystem := "middleware_profile_test", "delete_profile"
 	mw := newTestInstrumentingMiddleware(namespace, subsystem)
 	svc := mw(profile.FakeService)
 	err := svc.DeleteProfile(context.Background(), "")
