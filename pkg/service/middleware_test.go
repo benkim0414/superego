@@ -26,13 +26,13 @@ func TestNewLoggingMiddleware(t *testing.T) {
 func TestNewInstrumentingMiddleware(t *testing.T) {
 	fieldKeys := []string{"method", "error"}
 	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
-		Namespace: "superego",
+		Namespace: "middleware_test",
 		Subsystem: "profile",
 		Name:      "request_count",
 		Help:      "Number of requests received.",
 	}, fieldKeys)
 	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
-		Namespace: "superego",
+		Namespace: "middleware_test",
 		Subsystem: "profile",
 		Name:      "request_latency_microseconds",
 		Help:      "Total duration of requests in microseconds.",
