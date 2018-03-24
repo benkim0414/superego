@@ -38,4 +38,4 @@ scrape_configs:
     # List of labeled statically configured targets for this job.
     static_configs:
       # The targets specified by the static config.
-      - targets: ['localhost:8079']
+      - targets: ['docker.for.mac.localhost:8079']
