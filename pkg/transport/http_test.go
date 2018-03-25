@@ -13,6 +13,8 @@ import (
 	"github.com/benkim0414/superego/pkg/endpoint"
 	"github.com/benkim0414/superego/pkg/profile"
 	"github.com/go-kit/kit/log"
+	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
 )
 
 var handlerTests = []struct {
@@ -49,7 +51,13 @@ var handlerTests = []struct {
 
 func TestNewHTTPHandler(t *testing.T) {
 	logger := log.NewNopLogger()
-	endpoints := endpoint.New(profile.FakeService, logger)
+	duration := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "http_test",
+		Subsystem: "profile",
+		Name:      "request_duration_seconds",
+		Help:      "Request duration in seconds.",
+	}, []string{"method", "success"})
+	endpoints := endpoint.New(profile.FakeService, logger, duration)
 	handler := NewHTTPHandler(endpoints, logger)
 
 	ts := httptest.NewServer(handler)
