@@ -51,6 +51,13 @@ func main() {
 		Name:      "request_latency_microseconds",
 		Help:      "Total duration of requests in microseconds.",
 	}, fieldKeys)
+	var duration metrics.Histogram
+	duration = kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "superego",
+		Subsystem: "profile",
+		Name:      "request_duration_seconds",
+		Help:      "Request duration in seconds.",
+	}, []string{"method", "success"})
 	http.DefaultServeMux.Handle("/metrics", promhttp.Handler())
 
 	ctx := context.Background()
@@ -63,7 +70,7 @@ func main() {
 
 	var (
 		service     = service.New(client, logger, requestCount, requestLatency)
-		endpoints   = endpoint.New(service, logger)
+		endpoints   = endpoint.New(service, logger, duration)
 		httpHandler = transport.NewHTTPHandler(endpoints, logger)
 	)
 
