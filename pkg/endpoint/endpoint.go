@@ -7,6 +7,7 @@ import (
 	"github.com/benkim0414/superego/pkg/service"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/metrics"
 )
 
 // Endpoints collects all of the endpoints that compose a profile service.
@@ -22,26 +23,31 @@ type Endpoints struct {
 
 // New returns an Endpoints struct where each endpoint
 // invokes the corresponding method on the provided service.
-func New(s service.Service, logger log.Logger) Endpoints {
+func New(s service.Service, logger log.Logger, duration metrics.Histogram) Endpoints {
 	var postProfileEndpoint endpoint.Endpoint
 	postProfileEndpoint = MakePostProfileEndpoint(s)
 	postProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "PostProfile"))(postProfileEndpoint)
+	postProfileEndpoint = InstrumentingMiddleware(duration.With("method", "PostProfile"))(postProfileEndpoint)
 
 	var getProfileEndpoint endpoint.Endpoint
 	getProfileEndpoint = MakeGetProfileEndpoint(s)
 	getProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "GetProfile"))(getProfileEndpoint)
+	getProfileEndpoint = InstrumentingMiddleware(duration.With("method", "GetProfile"))(getProfileEndpoint)
 
 	var putProfileEndpoint endpoint.Endpoint
 	putProfileEndpoint = MakePutProfileEndpoint(s)
 	putProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "PutProfile"))(putProfileEndpoint)
+	putProfileEndpoint = InstrumentingMiddleware(duration.With("method", "PutProfile"))(putProfileEndpoint)
 
 	var patchProfileEndpoint endpoint.Endpoint
 	patchProfileEndpoint = MakePatchProfileEndpoint(s)
 	patchProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "PatchProfile"))(patchProfileEndpoint)
+	patchProfileEndpoint = InstrumentingMiddleware(duration.With("method", "PatchProfile"))(patchProfileEndpoint)
 
 	var deleteProfileEndpoint endpoint.Endpoint
 	deleteProfileEndpoint = MakeDeleteProfileEndpoint(s)
 	deleteProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "DeleteProfile"))(deleteProfileEndpoint)
+	deleteProfileEndpoint = InstrumentingMiddleware(duration.With("method", "DeleteProfile"))(deleteProfileEndpoint)
 
 	return Endpoints{
 		PostProfileEndpoint:   postProfileEndpoint,
