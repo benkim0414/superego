@@ -16,11 +16,16 @@ import (
 	"github.com/benkim0414/superego/pkg/service"
 	"github.com/benkim0414/superego/pkg/transport"
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/metrics"
+	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	"github.com/graphql-go/handler"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
 	var (
+		promAddr = flag.String("prom.addr", ":8079", "Prometheus listen address")
 		httpAddr = flag.String("http.addr", ":8080", "HTTP listen address")
 		gqlAddr  = flag.String("graphql.addr", ":8081", "GraphQL listen address")
 	)
@@ -31,6 +36,30 @@ func main() {
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 	logger = log.With(logger, "caller", log.DefaultCaller)
 
+	fieldKeys := []string{"method", "error"}
+	var requestCount metrics.Counter
+	requestCount = kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
+		Namespace: "superego",
+		Subsystem: "profile",
+		Name:      "request_count",
+		Help:      "Number of requests received.",
+	}, fieldKeys)
+	var requestLatency metrics.Histogram
+	requestLatency = kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "superego",
+		Subsystem: "profile",
+		Name:      "request_latency_microseconds",
+		Help:      "Total duration of requests in microseconds.",
+	}, fieldKeys)
+	var duration metrics.Histogram
+	duration = kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "superego",
+		Subsystem: "profile",
+		Name:      "request_duration_seconds",
+		Help:      "Request duration in seconds.",
+	}, []string{"method", "success"})
+	http.DefaultServeMux.Handle("/metrics", promhttp.Handler())
+
 	ctx := context.Background()
 	projectID := os.Getenv("GCP_PROJECT_ID")
 	client, err := datastore.NewClient(ctx, projectID)
@@ -40,8 +69,8 @@ func main() {
 	defer client.Close()
 
 	var (
-		service     = service.New(client, logger)
-		endpoints   = endpoint.New(service, logger)
+		service     = service.New(client, logger, requestCount, requestLatency)
+		endpoints   = endpoint.New(service, logger, duration)
 		httpHandler = transport.NewHTTPHandler(endpoints, logger)
 	)
 
@@ -61,6 +90,11 @@ func main() {
 		c := make(chan os.Signal)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 		errs <- fmt.Errorf("%s", <-c)
+	}()
+
+	go func() {
+		logger.Log("transport", "Prometheus/HTTP", "addr", *promAddr)
+		errs <- http.ListenAndServe(*promAddr, http.DefaultServeMux)
 	}()
 
 	go func() {

@@ -1,0 +1,29 @@
+version: "3"
+networks:
+  superego_network:
+services:
+  superego:
+    build:
+      context: $GOPATH/src/github.com/benkim0414/superego
+      dockerfile: hack/docker/Dockerfile
+    image: superego:dev
+    ports:
+      - 8079:8079
+      - 8080:8080
+      - 8081:8081
+    networks:
+      - superego_network
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    ports:
+      - 9090:9090
+    networks:
+      - superego_network
+volumes:
+  prometheus_data:

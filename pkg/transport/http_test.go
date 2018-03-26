@@ -11,34 +11,36 @@ import (
 	"testing"
 
 	"github.com/benkim0414/superego/pkg/endpoint"
-	"github.com/benkim0414/superego/pkg/service"
+	"github.com/benkim0414/superego/pkg/profile"
 	"github.com/go-kit/kit/log"
+	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
 )
 
 var handlerTests = []struct {
 	method  string
 	path    string
-	profile *service.Profile
+	profile *profile.Profile
 }{
 	{
 		method:  http.MethodPost,
 		path:    "/api/v1/profiles/",
-		profile: &service.Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
+		profile: &profile.Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
 	},
 	{
 		method:  http.MethodGet,
 		path:    "/api/v1/profiles/gunwoo",
-		profile: &service.Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
+		profile: &profile.Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
 	},
 	{
 		method:  http.MethodPut,
 		path:    "/api/v1/profiles/gunwoo",
-		profile: &service.Profile{ID: "gunwoo", Email: "ben.kim@greenenergytrading.com.au"},
+		profile: &profile.Profile{ID: "gunwoo", Email: "ben.kim@greenenergytrading.com.au"},
 	},
 	{
 		method:  http.MethodPatch,
 		path:    "/api/v1/profiles/gunwoo",
-		profile: &service.Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
+		profile: &profile.Profile{ID: "gunwoo", Email: "gunwoo@gunwoo.org"},
 	},
 	{
 		method:  http.MethodDelete,
@@ -49,7 +51,13 @@ var handlerTests = []struct {
 
 func TestNewHTTPHandler(t *testing.T) {
 	logger := log.NewNopLogger()
-	endpoints := endpoint.New(service.FakeService, logger)
+	duration := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "http_test",
+		Subsystem: "profile",
+		Name:      "request_duration_seconds",
+		Help:      "Request duration in seconds.",
+	}, []string{"method", "success"})
+	endpoints := endpoint.New(profile.FakeService, logger, duration)
 	handler := NewHTTPHandler(endpoints, logger)
 
 	ts := httptest.NewServer(handler)
@@ -57,7 +65,7 @@ func TestNewHTTPHandler(t *testing.T) {
 
 	for _, tt := range handlerTests {
 		var body bytes.Buffer
-		if tt.method != http.MethodGet || tt.method != http.MethodDelete {
+		if tt.method == http.MethodPost || tt.method == http.MethodPut || tt.method == http.MethodPatch {
 			err := json.NewEncoder(&body).Encode(tt.profile)
 			if err != nil {
 				t.Fatal(err)
@@ -70,7 +78,7 @@ func TestNewHTTPHandler(t *testing.T) {
 
 		resp := w.Result()
 		var response struct {
-			Profile *service.Profile `json:"profile"`
+			Profile *profile.Profile `json:"profile"`
 			Err     error            `json:"err,omitempty"`
 		}
 		err := json.NewDecoder(resp.Body).Decode(&response)
@@ -94,7 +102,7 @@ func TestDecodePostProfileRequest(t *testing.T) {
 		t.Errorf("decodePostProfileRequest: got %v, want %v", request, nil)
 	}
 
-	p := &service.Profile{Email: "gunwoo@gunwoo.org"}
+	p := &profile.Profile{Email: "gunwoo@gunwoo.org"}
 	err = json.NewEncoder(&buf).Encode(p)
 	if err != nil {
 		t.Fatal(err)

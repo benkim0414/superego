@@ -1,105 +1,50 @@
 package service
 
 import (
-	"bytes"
-	"context"
 	"reflect"
 	"testing"
 
+	"github.com/benkim0414/superego/pkg/profile"
 	"github.com/go-kit/kit/log"
+	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
 )
 
-func TestLoggingMiddleware(t *testing.T) {
+func TestNewLoggingMiddleware(t *testing.T) {
 	logger := log.NewNopLogger()
-	want := &loggingMiddleware{
-		next:   FakeService,
-		logger: logger,
+	want := &LoggingMiddleware{
+		Logger: logger,
+		Next:   profile.FakeService,
 	}
 
-	got := LoggingMiddleware(logger)(FakeService)
+	got := NewLoggingMiddleware(logger)(profile.FakeService)
 	if !reflect.DeepEqual(got, want) {
-		t.Errorf("LoggingMiddleware: got %v, want %v", got, want)
+		t.Errorf("NewLoggingMiddleware: got %v, want %v", got, want)
 	}
 }
 
-func TestMiddlewarePostProfile(t *testing.T) {
-	var buf bytes.Buffer
-	logger := log.NewLogfmtLogger(&buf)
-
-	mw := LoggingMiddleware(logger)(FakeService)
-
-	ctx := context.Background()
-	p := &Profile{Email: "gunwoo@gunwoo.org"}
-	got, err := mw.PostProfile(ctx, p)
-	if err != nil {
-		t.Fatal(err)
+func TestNewInstrumentingMiddleware(t *testing.T) {
+	fieldKeys := []string{"method", "error"}
+	requestCount := kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
+		Namespace: "middleware_test",
+		Subsystem: "profile",
+		Name:      "request_count",
+		Help:      "Number of requests received.",
+	}, fieldKeys)
+	requestLatency := kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+		Namespace: "middleware_test",
+		Subsystem: "profile",
+		Name:      "request_latency_microseconds",
+		Help:      "Total duration of requests in microseconds.",
+	}, fieldKeys)
+	want := &InstrumentingMiddleware{
+		RequestCount:   requestCount,
+		RequestLatency: requestLatency,
+		Next:           profile.FakeService,
 	}
-	if !reflect.DeepEqual(got, p) {
-		t.Errorf("PostProfile: got %v, want %v", got, p)
-	}
-}
 
-func TestMiddlewareGetProfile(t *testing.T) {
-	var buf bytes.Buffer
-	logger := log.NewLogfmtLogger(&buf)
-
-	mw := LoggingMiddleware(logger)(FakeService)
-
-	ctx := context.Background()
-	p := &Profile{ID: "", Email: "gunwoo@gunwoo.org"}
-	got, err := mw.GetProfile(ctx, p.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(got, p) {
-		t.Errorf("GetProfile: got %v, want %v", got, p)
-	}
-}
-
-func TestMiddlewarePutProfile(t *testing.T) {
-	var buf bytes.Buffer
-	logger := log.NewLogfmtLogger(&buf)
-
-	mw := LoggingMiddleware(logger)(FakeService)
-
-	ctx := context.Background()
-	p := &Profile{ID: "", Email: "ben.kim@greenenergytrading.com.au"}
-	got, err := mw.PutProfile(ctx, p.ID, p)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(got, p) {
-		t.Errorf("PutProfile: got %v, want %v", got, p)
-	}
-}
-
-func TestMiddlewarePatchProfile(t *testing.T) {
-	var buf bytes.Buffer
-	logger := log.NewLogfmtLogger(&buf)
-
-	mw := LoggingMiddleware(logger)(FakeService)
-
-	ctx := context.Background()
-	p := &Profile{ID: "", Email: "gunwoo@gunwoo.org"}
-	got, err := mw.PatchProfile(ctx, p.ID, p)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(got, p) {
-		t.Errorf("PatchProfile: got %v, want %v", got, p)
-	}
-}
-
-func TestMiddlewareDeleteProfile(t *testing.T) {
-	var buf bytes.Buffer
-	logger := log.NewLogfmtLogger(&buf)
-
-	mw := LoggingMiddleware(logger)(FakeService)
-
-	ctx := context.Background()
-	id := ""
-	err := mw.DeleteProfile(ctx, id)
-	if err != nil {
-		t.Errorf("DeleteProfile: got %v, want %v", err, nil)
+	got := NewInstrumentingMiddleware(requestCount, requestLatency)(profile.FakeService)
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("NewInstrumentingMiddleware: got %v, want %v", got, want)
 	}
 }

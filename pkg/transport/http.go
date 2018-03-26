@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/benkim0414/superego/pkg/endpoint"
-	"github.com/benkim0414/superego/pkg/service"
+	"github.com/benkim0414/superego/pkg/profile"
 	"github.com/go-kit/kit/log"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
@@ -90,7 +90,7 @@ func decodePutProfileRequest(_ context.Context, r *http.Request) (request interf
 	if !ok {
 		return nil, ErrBadRouting
 	}
-	profile := &service.Profile{}
+	profile := &profile.Profile{}
 	if err := json.NewDecoder(r.Body).Decode(&profile); err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func decodePatchProfileRequest(_ context.Context, r *http.Request) (request inte
 	if !ok {
 		return nil, ErrBadRouting
 	}
-	profile := &service.Profile{}
+	profile := &profile.Profile{}
 	if err := json.NewDecoder(r.Body).Decode(&profile); err != nil {
 		return nil, err
 	}
