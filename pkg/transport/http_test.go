@@ -101,6 +101,9 @@ func TestDecodePostProfileRequest(t *testing.T) {
 	if request != nil {
 		t.Errorf("decodePostProfileRequest: got %v, want %v", request, nil)
 	}
+	if err == nil {
+		t.Errorf("decodePostProfileRequest: should have an error, not %v", err)
+	}
 
 	p := &profile.Profile{Email: "gunwoo@gunwoo.org"}
 	err = json.NewEncoder(&buf).Encode(p)
@@ -113,6 +116,9 @@ func TestDecodePostProfileRequest(t *testing.T) {
 	got := request.(endpoint.PostProfileRequest)
 	if !reflect.DeepEqual(got.Profile, p) {
 		t.Errorf("decodePostProfileRequest: got %v, want %v", got.Profile, p)
+	}
+	if err != nil {
+		t.Errorf("decodePostProfileRequest: got %v, want %v", err, nil)
 	}
 }
 
