@@ -103,10 +103,12 @@ func MakeDeleteProfileEndpoint(s service.Service) endpoint.Endpoint {
 	}
 }
 
+// PostProfileRequest collects the request parameters for the PostProfile method.
 type PostProfileRequest struct {
 	Profile *profile.Profile `json:"profile"`
 }
 
+// PostProfileResponse collects the response values for the PostProfile method.
 type PostProfileResponse struct {
 	Profile *profile.Profile `json:"profile"`
 	Err     error            `json:"err,omitempty"`
@@ -114,10 +116,12 @@ type PostProfileResponse struct {
 
 func (r PostProfileResponse) error() error { return r.Err }
 
+// GetProfileRequest collects the request parameters for the GetProfile method.
 type GetProfileRequest struct {
 	ID string `json:"id"`
 }
 
+// GetProfileResponse collects the response values for the GetProfile method.
 type GetProfileResponse struct {
 	Profile *profile.Profile `json:"profile,omitempty"`
 	Err     error            `json:"err,omitempty"`
@@ -125,11 +129,13 @@ type GetProfileResponse struct {
 
 func (r GetProfileResponse) error() error { return r.Err }
 
+// PutProfileRequest collects the request parameters for the PutProfile method.
 type PutProfileRequest struct {
 	ID      string           `json:"id"`
 	Profile *profile.Profile `json:"profile"`
 }
 
+// PutProfileResponse collects the response values for the PutProfile method.
 type PutProfileResponse struct {
 	Profile *profile.Profile `json:"profile,omitempty"`
 	Err     error            `json:"err,omitempty"`
@@ -137,11 +143,13 @@ type PutProfileResponse struct {
 
 func (r PutProfileResponse) error() error { return r.Err }
 
+// PatchProfileRequest collects the request parameters for the PatchProfile method.
 type PatchProfileRequest struct {
 	ID      string           `json:"id"`
 	Profile *profile.Profile `json:"profile"`
 }
 
+// PatchProfileResponse collects the response values for the PatchProfile method.
 type PatchProfileResponse struct {
 	Profile *profile.Profile `json:"profile,omitempty"`
 	Err     error            `json:"err,omitempty"`
@@ -149,10 +157,12 @@ type PatchProfileResponse struct {
 
 func (r PatchProfileResponse) error() error { return r.Err }
 
+// DeleteProfileRequest collects the request parameters for the DeleteProfile method.
 type DeleteProfileRequest struct {
 	ID string
 }
 
+// DeleteProfileResponse collects the response values for the DeleteProfile method.
 type DeleteProfileResponse struct {
 	Err error `json:"err,omitempty"`
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/benkim0414/superego/pkg/profile"
 )
 
+// PostProfile implements Service.
 func (mw LoggingMiddleware) PostProfile(ctx context.Context, p *profile.Profile) (profile *profile.Profile, err error) {
 	defer func(begin time.Time) {
 		mw.Logger.Log("method", "PostProfile", "id", p.ID, "took", time.Since(begin), "err", err)
@@ -15,6 +16,7 @@ func (mw LoggingMiddleware) PostProfile(ctx context.Context, p *profile.Profile)
 	return mw.Next.PostProfile(ctx, p)
 }
 
+// GetProfile implements Service.
 func (mw LoggingMiddleware) GetProfile(ctx context.Context, id string) (profile *profile.Profile, err error) {
 	defer func(begin time.Time) {
 		mw.Logger.Log("method", "GetProfile", "id", id, "took", time.Since(begin), "err", err)
@@ -22,6 +24,7 @@ func (mw LoggingMiddleware) GetProfile(ctx context.Context, id string) (profile 
 	return mw.Next.GetProfile(ctx, id)
 }
 
+// PutProfile implements Service.
 func (mw LoggingMiddleware) PutProfile(ctx context.Context, id string, p *profile.Profile) (profile *profile.Profile, err error) {
 	defer func(begin time.Time) {
 		mw.Logger.Log("method", "PutProfile", "id", id, "took", time.Since(begin), "err", err)
@@ -29,6 +32,7 @@ func (mw LoggingMiddleware) PutProfile(ctx context.Context, id string, p *profil
 	return mw.Next.PutProfile(ctx, id, p)
 }
 
+// PatchProfile implements Service.
 func (mw LoggingMiddleware) PatchProfile(ctx context.Context, id string, p *profile.Profile) (profile *profile.Profile, err error) {
 	defer func(begin time.Time) {
 		mw.Logger.Log("method", "PatchProfile", "id", id, "took", time.Since(begin), "err", err)
@@ -36,6 +40,7 @@ func (mw LoggingMiddleware) PatchProfile(ctx context.Context, id string, p *prof
 	return mw.Next.PatchProfile(ctx, id, p)
 }
 
+// DeleteProfile implements Service.
 func (mw LoggingMiddleware) DeleteProfile(ctx context.Context, id string) (err error) {
 	defer func(begin time.Time) {
 		mw.Logger.Log("method", "DeleteProfile", "id", id, "took", time.Since(begin), "err", err)
@@ -43,6 +48,7 @@ func (mw LoggingMiddleware) DeleteProfile(ctx context.Context, id string) (err e
 	return mw.Next.DeleteProfile(ctx, id)
 }
 
+// PostProfile implements Service.
 func (mw InstrumentingMiddleware) PostProfile(ctx context.Context, p *profile.Profile) (profile *profile.Profile, err error) {
 	defer func(begin time.Time) {
 		lvs := []string{"method", "PostProfile", "error", fmt.Sprint(err != nil)}
@@ -53,6 +59,7 @@ func (mw InstrumentingMiddleware) PostProfile(ctx context.Context, p *profile.Pr
 	return
 }
 
+// GetProfile implements Service.
 func (mw InstrumentingMiddleware) GetProfile(ctx context.Context, id string) (profile *profile.Profile, err error) {
 	defer func(begin time.Time) {
 		lvs := []string{"method", "GetProfile", "error", fmt.Sprint(err != nil)}
@@ -63,6 +70,7 @@ func (mw InstrumentingMiddleware) GetProfile(ctx context.Context, id string) (pr
 	return
 }
 
+// PutProfile implements Service.
 func (mw InstrumentingMiddleware) PutProfile(ctx context.Context, id string, p *profile.Profile) (profile *profile.Profile, err error) {
 	defer func(begin time.Time) {
 		lvs := []string{"method", "PutProfile", "error", fmt.Sprint(err != nil)}
@@ -73,6 +81,7 @@ func (mw InstrumentingMiddleware) PutProfile(ctx context.Context, id string, p *
 	return
 }
 
+// PatchProfile implements Service.
 func (mw InstrumentingMiddleware) PatchProfile(ctx context.Context, id string, p *profile.Profile) (profile *profile.Profile, err error) {
 	defer func(begin time.Time) {
 		lvs := []string{"method", "PatchProfile", "error", fmt.Sprint(err != nil)}
@@ -83,6 +92,7 @@ func (mw InstrumentingMiddleware) PatchProfile(ctx context.Context, id string, p
 	return
 }
 
+// DeleteProfile implements Service.
 func (mw InstrumentingMiddleware) DeleteProfile(ctx context.Context, id string) (err error) {
 	defer func(begin time.Time) {
 		lvs := []string{"method", "DeleteProfile", "error", fmt.Sprint(err != nil)}

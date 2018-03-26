@@ -218,7 +218,7 @@ func TestEncodeError(t *testing.T) {
 
 	ctx := context.Background()
 	w := httptest.NewRecorder()
-	var err error = nil
+	var err error
 	defer func() {
 		if r := recover(); r == nil {
 			t.Error("encodceError could not be recovered with nil error")

@@ -7,10 +7,12 @@ import (
 	"github.com/go-kit/kit/metrics"
 )
 
+// Service describes a service that manage profiles.
 type Service interface {
 	profile.Service
 }
 
+// New returns a basic Service with all of the expected middlewares wired in.
 func New(client *datastore.Client, logger log.Logger, requestCount metrics.Counter, requestLatency metrics.Histogram) Service {
 	var svc Service
 	svc = &service{

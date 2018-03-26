@@ -16,6 +16,7 @@ var (
 	profileType     *graphql.Object
 )
 
+// NewSchema returns graphql.Schema with the given resolver.
 func NewSchema(resolver Resolver) (graphql.Schema, error) {
 
 	// interface Node {
