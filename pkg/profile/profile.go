@@ -3,7 +3,7 @@ package profile
 // Profile represents a person's profile.
 type Profile struct {
 	// The ID of the profile
-	ID string `json:"id", datastore:"-"`
+	ID string `json:"id" datastore:"-"`
 	// The name of the person, which is suitable for display.
 	DisplayName string `json:"displayName"`
 	// A representation of the individual components of a person's name.
