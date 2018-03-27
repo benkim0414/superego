@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	// ErrNoSuchEntity is returned when no entity was found for a given key.
 	ErrNoSuchEntity = errors.New("no such entity")
 )
 
@@ -16,6 +17,7 @@ type fakeService struct {
 	profiles map[string]*Profile
 }
 
+// FakeService is an instance of fakeService.
 var FakeService = &fakeService{profiles: map[string]*Profile{}}
 
 func (f *fakeService) PostProfile(_ context.Context, p *Profile) (*Profile, error) {

@@ -8,9 +8,11 @@ import (
 )
 
 var (
+	// noProjectID is returned when GCP_PROJECT_ID is not set.
 	noProjectID = errors.New("GCP_PROJECT_ID is not set")
 )
 
+// Context represents a test context.
 type Context struct {
 	ProjectID string
 }

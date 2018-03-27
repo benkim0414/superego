@@ -16,6 +16,7 @@ func NewLoggingMiddleware(logger log.Logger) Middleware {
 	}
 }
 
+// LoggingMiddleware takes a logger as a dependency and returns a ServiceMiddleware.
 type LoggingMiddleware struct {
 	Logger log.Logger
 	Next   Service
@@ -33,6 +34,8 @@ func NewInstrumentingMiddleware(requestCount metrics.Counter, requestLatency met
 	}
 }
 
+// InstrumentingMiddleware returns a service middleware that instruments
+// the number of requests received and total duration of requests.
 type InstrumentingMiddleware struct {
 	RequestCount   metrics.Counter
 	RequestLatency metrics.Histogram
