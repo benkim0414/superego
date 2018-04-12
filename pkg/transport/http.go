@@ -9,8 +9,10 @@ import (
 	"github.com/benkim0414/superego/pkg/endpoint"
 	"github.com/benkim0414/superego/pkg/profile"
 	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/tracing/opentracing"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
+	stdopentracing "github.com/opentracing/opentracing-go"
 )
 
 var (
@@ -20,7 +22,7 @@ var (
 )
 
 // NewHTTPHandler mounts all of the service endpoints into an http.Handler.
-func NewHTTPHandler(endpoints endpoint.Endpoints, logger log.Logger) http.Handler {
+func NewHTTPHandler(endpoints endpoint.Endpoints, logger log.Logger, tracer stdopentracing.Tracer) http.Handler {
 	r := mux.NewRouter().PathPrefix("/api/v1/").Subrouter()
 
 	options := []httptransport.ServerOption{
@@ -38,31 +40,31 @@ func NewHTTPHandler(endpoints endpoint.Endpoints, logger log.Logger) http.Handle
 		endpoints.PostProfileEndpoint,
 		decodePostProfileRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "PostProfile", logger)))...,
 	))
 	r.Methods("GET").Path("/profiles/{id}").Handler(httptransport.NewServer(
 		endpoints.GetProfileEndpoint,
 		decodeGetProfileRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "GetProfile", logger)))...,
 	))
 	r.Methods("PUT").Path("/profiles/{id}").Handler(httptransport.NewServer(
 		endpoints.PutProfileEndpoint,
 		decodePutProfileRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "PutProfile", logger)))...,
 	))
 	r.Methods("PATCH").Path("/profiles/{id}").Handler(httptransport.NewServer(
 		endpoints.PatchProfileEndpoint,
 		decodePatchProfileRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "PatchProfile", logger)))...,
 	))
 	r.Methods("DELETE").Path("/profiles/{id}").Handler(httptransport.NewServer(
 		endpoints.DeleteProfileEndpoint,
 		decodeDeleteProfileRequest,
 		encodeResponse,
-		options...,
+		append(options, httptransport.ServerBefore(opentracing.HTTPToContext(tracer, "DeleteProfile", logger)))...,
 	))
 	return r
 }

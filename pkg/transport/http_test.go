@@ -14,6 +14,7 @@ import (
 	"github.com/benkim0414/superego/pkg/profile"
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	stdopentracing "github.com/opentracing/opentracing-go"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 )
 
@@ -57,8 +58,10 @@ func TestNewHTTPHandler(t *testing.T) {
 		Name:      "request_duration_seconds",
 		Help:      "Request duration in seconds.",
 	}, []string{"method", "success"})
-	endpoints := endpoint.New(profile.FakeService, logger, duration)
-	handler := NewHTTPHandler(endpoints, logger)
+	tracer := stdopentracing.GlobalTracer()
+
+	endpoints := endpoint.New(profile.FakeService, logger, duration, tracer)
+	handler := NewHTTPHandler(endpoints, logger, tracer)
 
 	ts := httptest.NewServer(handler)
 	defer ts.Close()
