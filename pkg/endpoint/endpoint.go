@@ -8,6 +8,8 @@ import (
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/metrics"
+	"github.com/go-kit/kit/tracing/opentracing"
+	stdopentracing "github.com/opentracing/opentracing-go"
 )
 
 // Endpoints collects all of the endpoints that compose a profile service.
@@ -23,29 +25,34 @@ type Endpoints struct {
 
 // New returns an Endpoints struct where each endpoint
 // invokes the corresponding method on the provided service.
-func New(s service.Service, logger log.Logger, duration metrics.Histogram) Endpoints {
+func New(s service.Service, logger log.Logger, duration metrics.Histogram, tracer stdopentracing.Tracer) Endpoints {
 	var postProfileEndpoint endpoint.Endpoint
 	postProfileEndpoint = MakePostProfileEndpoint(s)
+	postProfileEndpoint = opentracing.TraceServer(tracer, "PostProfile")(postProfileEndpoint)
 	postProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "PostProfile"))(postProfileEndpoint)
 	postProfileEndpoint = InstrumentingMiddleware(duration.With("method", "PostProfile"))(postProfileEndpoint)
 
 	var getProfileEndpoint endpoint.Endpoint
 	getProfileEndpoint = MakeGetProfileEndpoint(s)
+	getProfileEndpoint = opentracing.TraceServer(tracer, "GetProfile")(getProfileEndpoint)
 	getProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "GetProfile"))(getProfileEndpoint)
 	getProfileEndpoint = InstrumentingMiddleware(duration.With("method", "GetProfile"))(getProfileEndpoint)
 
 	var putProfileEndpoint endpoint.Endpoint
 	putProfileEndpoint = MakePutProfileEndpoint(s)
+	putProfileEndpoint = opentracing.TraceServer(tracer, "PutProfile")(putProfileEndpoint)
 	putProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "PutProfile"))(putProfileEndpoint)
 	putProfileEndpoint = InstrumentingMiddleware(duration.With("method", "PutProfile"))(putProfileEndpoint)
 
 	var patchProfileEndpoint endpoint.Endpoint
 	patchProfileEndpoint = MakePatchProfileEndpoint(s)
+	patchProfileEndpoint = opentracing.TraceServer(tracer, "PatchProfile")(patchProfileEndpoint)
 	patchProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "PatchProfile"))(patchProfileEndpoint)
 	patchProfileEndpoint = InstrumentingMiddleware(duration.With("method", "PatchProfile"))(patchProfileEndpoint)
 
 	var deleteProfileEndpoint endpoint.Endpoint
 	deleteProfileEndpoint = MakeDeleteProfileEndpoint(s)
+	deleteProfileEndpoint = opentracing.TraceServer(tracer, "DeleteProfile")(deleteProfileEndpoint)
 	deleteProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "DeleteProfile"))(deleteProfileEndpoint)
 	deleteProfileEndpoint = InstrumentingMiddleware(duration.With("method", "DeleteProfile"))(deleteProfileEndpoint)
 

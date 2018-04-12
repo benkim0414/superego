@@ -8,6 +8,8 @@ import (
 	"github.com/benkim0414/superego/pkg/profile"
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	"github.com/go-kit/kit/tracing/opentracing"
+	stdopentracing "github.com/opentracing/opentracing-go"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 )
 
@@ -19,28 +21,34 @@ func TestNew(t *testing.T) {
 		Name:      "request_duration_seconds",
 		Help:      "Request duration in seconds.",
 	}, []string{"method", "success"})
+	tracer := stdopentracing.GlobalTracer()
 
 	postProfileEndpoint := MakePostProfileEndpoint(profile.FakeService)
+	postProfileEndpoint = opentracing.TraceServer(tracer, "PostProfile")(postProfileEndpoint)
 	postProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "PostProfile"))(postProfileEndpoint)
 	postProfileEndpoint = InstrumentingMiddleware(duration.With("method", "PostProfile"))(postProfileEndpoint)
 
 	getProfileEndpoint := MakeGetProfileEndpoint(profile.FakeService)
+	getProfileEndpoint = opentracing.TraceServer(tracer, "GetProfile")(getProfileEndpoint)
 	getProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "GetProfile"))(getProfileEndpoint)
 	getProfileEndpoint = InstrumentingMiddleware(duration.With("method", "GetProfile"))(getProfileEndpoint)
 
 	putProfileEndpoint := MakePutProfileEndpoint(profile.FakeService)
+	putProfileEndpoint = opentracing.TraceServer(tracer, "PutProfile")(putProfileEndpoint)
 	putProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "PutProfile"))(putProfileEndpoint)
 	putProfileEndpoint = InstrumentingMiddleware(duration.With("method", "PutProfile"))(putProfileEndpoint)
 
 	patchProfileEndpoint := MakePatchProfileEndpoint(profile.FakeService)
+	patchProfileEndpoint = opentracing.TraceServer(tracer, "PatchProfile")(patchProfileEndpoint)
 	patchProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "PatchProfile"))(patchProfileEndpoint)
 	patchProfileEndpoint = InstrumentingMiddleware(duration.With("method", "PatchProfile"))(patchProfileEndpoint)
 
 	deleteProfileEndpoint := MakeDeleteProfileEndpoint(profile.FakeService)
+	deleteProfileEndpoint = opentracing.TraceServer(tracer, "DeleteProfile")(deleteProfileEndpoint)
 	deleteProfileEndpoint = LoggingMiddleware(log.With(logger, "method", "DeleteProfile"))(deleteProfileEndpoint)
 	deleteProfileEndpoint = InstrumentingMiddleware(duration.With("method", "DeleteProfile"))(deleteProfileEndpoint)
 
-	endpoints := New(profile.FakeService, logger, duration)
+	endpoints := New(profile.FakeService, logger, duration, tracer)
 	ctx := context.Background()
 	var req interface{}
 	req = PostProfileRequest{
