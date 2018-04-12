@@ -19,8 +19,12 @@ import (
 	"github.com/go-kit/kit/metrics"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	"github.com/graphql-go/handler"
+	opentracing "github.com/opentracing/opentracing-go"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	jaeger "github.com/uber/jaeger-client-go"
+	config "github.com/uber/jaeger-client-go/config"
+	jaegerlog "github.com/uber/jaeger-lib/client/log/go-kit"
 )
 
 func main() {
@@ -60,6 +64,27 @@ func main() {
 	}, []string{"method", "success"})
 	http.DefaultServeMux.Handle("/metrics", promhttp.Handler())
 
+	// Sample configuration for testing. Use constant sampling to sample every trace
+	// and enable LogSpan to log every span via configured Logger.
+	cfg := config.Configuration{
+		Sampler: &config.SamplerConfig{
+			Type:  jaeger.SamplerTypeConst,
+			Param: 1,
+		},
+		Reporter: &config.ReporterConfig{
+			LogSpans: true,
+		},
+	}
+	tracer, closer, err := cfg.New(
+		"superego",
+		config.Logger(jaegerlog.NewLogger(logger)),
+	)
+	if err != nil {
+		logger.Log("jaeger: could not initialize jaeger tracer: %s", err.Error())
+	}
+	defer closer.Close()
+	opentracing.SetGlobalTracer(tracer)
+
 	ctx := context.Background()
 	projectID := os.Getenv("GCP_PROJECT_ID")
 	client, err := datastore.NewClient(ctx, projectID)
@@ -70,8 +95,8 @@ func main() {
 
 	var (
 		service     = service.New(client, logger, requestCount, requestLatency)
-		endpoints   = endpoint.New(service, logger, duration)
-		httpHandler = transport.NewHTTPHandler(endpoints, logger)
+		endpoints   = endpoint.New(service, logger, duration, tracer)
+		httpHandler = transport.NewHTTPHandler(endpoints, logger, tracer)
 	)
 
 	schema, err := graphql.NewSchema(service)
