@@ -37,6 +37,7 @@
   packages = [
     "endpoint",
     "log",
+    "log/level",
     "metrics",
     "metrics/internal/lv",
     "metrics/prometheus",
@@ -202,9 +203,12 @@
 
 [[projects]]
   name = "github.com/uber/jaeger-lib"
-  packages = ["metrics"]
-  revision = "4267858c0679cd4e47cefed8d7f70fd386cfb567"
-  version = "v1.4.0"
+  packages = [
+    "client/log/go-kit",
+    "metrics"
+  ]
+  revision = "5519f3beabf28707fca8d3f47f9cff87dad48d96"
+  version = "v1.3.0"
 
 [[projects]]
   branch = "master"
@@ -331,6 +335,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d6c9fab1ae93cefdc173b82a5b035ddedfc4ec7faec45c484164c141260b18d3"
+  inputs-digest = "7a849322552c970e3e092e5854c5fbd751a21dee0beab081fc67714ccf3ba156"
   solver-name = "gps-cdcl"
   solver-version = 1
