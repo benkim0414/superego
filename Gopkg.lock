@@ -28,6 +28,7 @@
     "metrics",
     "metrics/internal/lv",
     "metrics/prometheus",
+    "tracing/opentracing",
     "transport/http"
   ]
   revision = "4dc7be5d2d12881735283bcab7352178e190fc71"
@@ -119,6 +120,16 @@
   packages = ["pbutil"]
   revision = "3247c84500bff8d9fb6d579d800f20b3e091582c"
   version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/opentracing/opentracing-go"
+  packages = [
+    ".",
+    "ext",
+    "log"
+  ]
+  revision = "1949ddbfd147afd4d964a9f00b24eb291e0e7c38"
+  version = "v1.0.2"
 
 [[projects]]
   name = "github.com/prometheus/client_golang"
@@ -281,6 +292,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9baf6c08f04de876d46db237e2313ce9b3c8addc6abd85702f876228087c8339"
+  inputs-digest = "2ed437cdd3374c9f77b09dc3753cd1dd9ed175a021fc07b6df89d0794f796f1c"
   solver-name = "gps-cdcl"
   solver-version = 1
